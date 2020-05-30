@@ -1,0 +1,10 @@
+<%- include("./partials/header")%>
+<div class="register">
+    <form action="/register" method="post">
+        <input type="email" name="email" placeholder="Email" required="required" />
+        <input type="password" name="password" placeholder="Password" required="required" />
+        <input type="password" name="password2" placeholder="Repeat password" required="required" />
+        <button type="submit" class="btn btn-primary btn-large">Let me in.</button>
+    </form>
+</div>
+<%- include("./partials/footer")%>

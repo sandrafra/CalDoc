@@ -1,0 +1,84 @@
+body {
+	text-align: center;
+	background-color: white;
+}
+/* .poster {
+	background-image: url(/pictures/blue-and-silver-stetoscope-40568.jpg);
+	opacity: 80%;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	height: 750px;
+} */
+.navbar{
+	background-color:  rgba(37, 128, 139, 0.6)
+}
+.login {
+	width: 50%;
+	margin: 0 auto;
+	margin-top: 40px;
+}
+.login form{
+	display: block;
+    text-align: center
+}
+ form input{
+	 display: block;
+	 margin: 0 auto;
+	 margin-bottom: 10px;
+	 padding: 5px;
+	 
+ }
+
+ .login input[type="radio"] {
+	 display: inline;
+	 margin-right: 5px;
+ }
+
+ .login button {
+	 display: block;
+	 margin: 0 auto;
+ }
+
+ #appointment {
+	 background-color: blue;
+	 padding: 10px;
+	 font-size: 50px;
+ }
+
+ #calendar {
+	 background-color: pink ;
+	 padding: 10px;
+	 font-size: 50px;
+ }
+
+ #login {
+	 background-color: cadetblue;
+	 padding: 10px;
+	 font-size: 50px;
+ }
+
+a {
+	color: white;
+}
+.row div{
+	padding: 0;
+}
+.thumbnail {
+ background-color: white;
+ height: 150px;
+ text-align: center;
+ border-radius: 2rem;
+ border: 2px solid;
+}
+
+.container-fluid {
+	background-image: url(/pictures/blue-and-silver-stetoscope-40568.jpg);
+	opacity: 80%;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	height: 500px;
+	margin: 0 auto;
+}
+
