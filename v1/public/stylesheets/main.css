@@ -9,6 +9,14 @@ nav .navbar-nav li a{
 .navbar{
 	background-color:  rgba(75, 199, 212, 0.5);
 }
+.middle
+{
+	margin-left: 30%;
+}
+.middle li{
+	margin: 0 auto;
+	padding-right: 25px;
+}
 .login {
 	width: 50%;
 	margin: 0 auto;
