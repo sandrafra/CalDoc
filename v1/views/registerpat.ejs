@@ -1,4 +1,7 @@
 <%- include("./partials/header")%>
+<%if (message) {%>
+<h4 class="alert alert-danger"><%=message%></h4>
+<%}%>
 <div class="register">
     <form action="/registerpat" method="post">
         <input type="text" name="name" placeholder="Name" required="required" />
