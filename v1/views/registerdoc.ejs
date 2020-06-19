@@ -1,11 +1,9 @@
 <%- include("./partials/header")%>
 <div class="register">
-  <image id="profileImage" src="/pictures/profilowe.png"/>
-    <form action="/register" method="post">
-      <input id="image" type="file" name="profile_photo" placeholder="Photo" required="" capture>        
-        <label for="cars">Choose a specializations:</label>
-        <select name="cars" id="cars">
-          <option value="cardiolog">Cardiolog</option>
+    <form action="/registerdoc" method="post">
+        <label for="spec">Choose a specializations:</label>
+        <select name="specialization" id="spec">
+          <option value="cardiolog" selected>Cardiolog</option>
           <option value="laryngolog">Laryngolog</option>
         </select>
         <input type="text" name="name" placeholder="Name" required="required" />

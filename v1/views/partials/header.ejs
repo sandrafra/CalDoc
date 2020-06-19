@@ -34,7 +34,7 @@
             </li>
           </ul>
           <ul class="navbar-nav ml-auto">
-            <%if(!currentUser){%>
+            <%if(!currentUserID){%>
             <li class="nav-item">
                 <a class="nav-link hvr-grow" href="/login"><i class="fas fa-unlock-alt"></i> Login</a>
               </li>
@@ -43,7 +43,7 @@
               </li>
               <% } else{%>
               <li class=nav-item>
-                <a class="nav-link hvr-grow" href="/logout"><i class="fas fa-user"></i></a>
+                <a class="nav-link hvr-grow" href="/logout"><i class="fas fa-user"></i> Logout</a>
               </li>
               <%}%>
           </ul>
