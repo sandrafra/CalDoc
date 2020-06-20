@@ -158,6 +158,40 @@ app.post("/registerpat", function (req, res) {
     });
 });
 
+app.get('/registercln', function(req,res){
+    res.render("registercln");
+});
+
+app.post("/registercln", function(req,res){
+    var confirmedPass = req.body.password2;
+    con.query("SELECT email FROM clinics WHERE email = ?", [req.body.email], function (err, result) {
+        if (err) {
+            console.log(err);
+        } else {
+            if (result.length > 0) {
+                return res.render("registercln", {
+                    message: "This email is already used!"
+                });
+            } else if (req.body.password !== confirmedPass) {
+                return res.render("registercln", {
+                    message: "Passwords do not match!"
+                });
+            } else {
+                bcrypt.hash(req.body.password, 10, function (err, hash) {
+                    var clinic = [req.body.name, req.body.email, req.body.phone, req.body.zipcode, req.body.city, req.body.street, hash];
+                    con.query('INSERT INTO clinics (name, email, phone, zipcode, city, street, password) VALUES (?, ?, ?, ?, ?, ?, ?)', clinic, function (err) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log("Added new clinic");
+                            res.redirect("/calendar");
+                        }
+                    });
+                });
+            }
+        }
+    });
+})
 app.get("/logout", function (req, res) {
     req.logOut();
     req.session.destroy();
