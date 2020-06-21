@@ -3,7 +3,7 @@ var express = require("express"),
     nodemailer = require('nodemailer');
     session = require("express-session"),
     bodyParser = require("body-parser"),
-    mysql = require("mysql2"),
+    mysql = require("mysql"),
     bcrypt = require("bcrypt"),
     passport = require("passport");
 
