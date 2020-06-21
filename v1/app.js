@@ -11,14 +11,6 @@ var MySQLStore = require('express-mysql-session')(session);
 var LocalStrategy = require('passport-local').Strategy;
 require("dotenv").config();
 
-
-// async..await is not allowed in global scope, must use a wrapper
-// async function main() {
-  // Generate test SMTP service account from ethereal.email
-  // Only needed if you don't have a real mail account for testing
-  let testAccount = nodemailer.createTestAccount();
-
-  // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
     service: process.env.MAIL_SERVICE, // true for 465, false for other ports
     auth: {
@@ -26,25 +18,6 @@ require("dotenv").config();
       pass: process.env.MAIL_PASS, // generated ethereal password
     },
   });
-
-  // send mail with defined transport object
-//   let info = await transporter.sendMail({
-//     from: 'DocCal', // sender address
-//     to: "safr8888@gmail.com", // list of receivers
-//     subject: "Weclom to the application", // Subject line
-//     text: "Hello, nice to meet you. Here is a link to confirm your account: ", // plain text body
-//     html: "<b>Hello world?</b>", // html body
-//   });
-
-//   console.log("Message sent: %s", info.messageId);
-//   // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-//   // Preview only available when sending through an Ethereal account
-//   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-//   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-// }
-
-// main().catch(console.error);
 
 var con = mysql.createConnection({
     host: process.env.DB_HOST,
