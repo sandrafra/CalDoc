@@ -250,6 +250,6 @@ function profileLogin(type, requestBody, done) {
     });
 }
 
-app.listen(3000, function () {
-    console.log("Server connected");
-});
+// app.listen(3000, function () {
+//     console.log("Server connected");
+// });
