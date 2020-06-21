@@ -1,5 +1,6 @@
 var express = require("express"),
     app = express(),
+    nodemailer = require('nodemailer');
     session = require("express-session"),
     bodyParser = require("body-parser"),
     mysql = require("mysql"),
@@ -8,28 +9,63 @@ var express = require("express"),
 
 var MySQLStore = require('express-mysql-session')(session);
 var LocalStrategy = require('passport-local').Strategy;
+require("dotenv").config();
 
+
+// async..await is not allowed in global scope, must use a wrapper
+// async function main() {
+  // Generate test SMTP service account from ethereal.email
+  // Only needed if you don't have a real mail account for testing
+  let testAccount = nodemailer.createTestAccount();
+
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    service: process.env.MAIL_SERVICE, // true for 465, false for other ports
+    auth: {
+      user: process.env.MAIL_USER, // generated ethereal user
+      pass: process.env.MAIL_PASS, // generated ethereal password
+    },
+  });
+
+  // send mail with defined transport object
+//   let info = await transporter.sendMail({
+//     from: 'DocCal', // sender address
+//     to: "safr8888@gmail.com", // list of receivers
+//     subject: "Weclom to the application", // Subject line
+//     text: "Hello, nice to meet you. Here is a link to confirm your account: ", // plain text body
+//     html: "<b>Hello world?</b>", // html body
+//   });
+
+//   console.log("Message sent: %s", info.messageId);
+//   // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+//   // Preview only available when sending through an Ethereal account
+//   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+//   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+// }
+
+// main().catch(console.error);
 
 var con = mysql.createConnection({
-    host: "mysql.agh.edu.pl",
-    user: "sandraf1",
-    password: "LxWTeuWU92S1ZfvX",
-    database: "sandraf1"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DATABASE
 });
 var options = {
-    host: "mysql.agh.edu.pl",
-    user: "sandraf1",
-    password: "LxWTeuWU92S1ZfvX",
-    database: "sandraf1"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DATABASE
 };
-
 var sessionStore = new MySQLStore(options);
 
 app.use(session({
     secret: 'bhgycfyxrtyfyluyhcdawetsdtykg6vufyse7u',
     store: sessionStore,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    expires: new Date(Date.now() + (3600))
 }));
 
 app.use(passport.initialize());
@@ -50,9 +86,11 @@ passport.use(new LocalStrategy({
     passReqToCallback: true
 },
     function (req, email, password, done) {
-           profileLogin(req.body.user, req.body, done);
-        }
-    ));
+        console.log(email);
+        console.log(password);
+        profileLogin(req.body.user, req.body, done);
+    }
+));
 
 app.use(function (req, res, next) {
     res.locals.currentUserID = req.user;
@@ -60,7 +98,7 @@ app.use(function (req, res, next) {
 });
 
 con.connect(function (err) {
-    if (err) throw err;
+    if (err) {console.log(err); throw err;}
     console.log("Connected!");
 });
 
@@ -87,7 +125,7 @@ app.get("/signup", function (req, res) {
     res.render("signup");
 });
 app.get("/registerdoc", function (req, res) {
-    res.render("registerdoc");
+    res.render("registerdoc", { message: "" });
 });
 
 app.post("/registerdoc", function (req, res) {
@@ -158,11 +196,11 @@ app.post("/registerpat", function (req, res) {
     });
 });
 
-app.get('/registercln', function(req,res){
-    res.render("registercln");
+app.get('/registercln', function (req, res) {
+    res.render("registercln", { message: "" });
 });
 
-app.post("/registercln", function(req,res){
+app.post("/registercln", function (req, res) {
     var confirmedPass = req.body.password2;
     con.query("SELECT email FROM clinics WHERE email = ?", [req.body.email], function (err, result) {
         if (err) {
@@ -224,16 +262,16 @@ function profileLogin(type, requestBody, done) {
             if (result.length > 0) {
                 bcrypt.compare(requestBody.password, result[0].password, function (err, compare) {
                     if (compare === true) {
-                        return done(null, {user_id : 9});
+                        return done(null, result[0].id);
                     }
                     else {
-                        return done(null,false);
+                        return done(null, false);
 
                     }
                 });
             }
             else {
-                return done(null,false);
+                return done(null, false);
             }
         }
     });
