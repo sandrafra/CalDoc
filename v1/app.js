@@ -1,23 +1,26 @@
 var express = require("express"),
     app = express(),
     nodemailer = require('nodemailer');
-    session = require("express-session"),
+session = require("express-session"),
     bodyParser = require("body-parser"),
     mysql = require("mysql"),
     bcrypt = require("bcrypt"),
+    jwt = require("jsonwebtoken"),
+    randomString = require("randomstring"),
+    crypto = require("crypto"),
     passport = require("passport");
 
 var MySQLStore = require('express-mysql-session')(session);
 var LocalStrategy = require('passport-local').Strategy;
 require("dotenv").config();
 
-  let transporter = nodemailer.createTransport({
-    service: process.env.MAIL_SERVICE, // true for 465, false for other ports
+let transporter = nodemailer.createTransport({
+    service: process.env.MAIL_SERVICE,
     auth: {
-      user: process.env.MAIL_USER, // generated ethereal user
-      pass: process.env.MAIL_PASS, // generated ethereal password
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
     },
-  });
+});
 
 var con = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -59,8 +62,6 @@ passport.use(new LocalStrategy({
     passReqToCallback: true
 },
     function (req, email, password, done) {
-        console.log(email);
-        console.log(password);
         profileLogin(req.body.user, req.body, done);
     }
 ));
@@ -189,11 +190,14 @@ app.post("/registercln", function (req, res) {
                 });
             } else {
                 bcrypt.hash(req.body.password, 10, function (err, hash) {
-                    var clinic = [req.body.name, req.body.email, req.body.phone, req.body.zipcode, req.body.city, req.body.street, hash];
-                    con.query('INSERT INTO clinics (name, email, phone, zipcode, city, street, password) VALUES (?, ?, ?, ?, ?, ?, ?)', clinic, function (err) {
+                    var token = crypto.randomBytes(64).toString('hex');
+                    var clinic = [req.body.name, req.body.email, req.body.phone, req.body.zipcode, req.body.city, req.body.street, hash, token];
+
+                    con.query('INSERT INTO clinics (name, email, phone, zipcode, city, street, password, token) VALUES (?, ?, ?, ?, ?, ?, ?,?)', clinic, function (err) {
                         if (err) {
                             console.log(err);
                         } else {
+                            verificationEmail(req.body.email, token);
                             console.log("Added new clinic");
                             res.redirect("/calendar");
                         }
@@ -235,7 +239,15 @@ function profileLogin(type, requestBody, done) {
             if (result.length > 0) {
                 bcrypt.compare(requestBody.password, result[0].password, function (err, compare) {
                     if (compare === true) {
-                        return done(null, result[0].id);
+                        var answer2 = 'SELECT confirmed FROM ' + type + 's WHERE email = ?';
+                        con.query(answer2, requestBody.email, function(err, confirmed){
+                        if (confirmed[0].confirmed === 1) {
+                            return done(null, result[0].id);
+                        }
+                        else {
+                            return done(null, false);
+                        }
+                    });
                     }
                     else {
                         return done(null, false);
@@ -248,9 +260,58 @@ function profileLogin(type, requestBody, done) {
             }
         }
     });
+};
+
+app.get("/confirmed/:token", function (req, res) {
+    var ans = "SELECT email FROM patients WHERE token = '" + req.params.token + "'";
+    con.query(ans,function(err, result){
+        if(result.length > 0) {
+            con.query("UPDATE patients SET token = 0, confirmed = 1 WHERE email = ?", result[0].email, function(err,result){
+                console.log("account confimred 1");
+            });
+            return 0;
+               } else {
+                   console.log("nothing")
+               }
+    });
+     var ans = "SELECT email FROM doctors WHERE token = '" + req.params.token + "'";
+     con.query(ans,function(err, result){
+        if(result.length > 0) {
+            con.query("UPDATE doctors SET token = 0, confirmed = 1 WHERE email = ?", result[0].email, function(err, result){
+                console.log("account confimred 2");
+            });
+            return 0;
+               }else {
+                console.log("nothing")
+            }
+    });
+      var ans = "SELECT email FROM clinics WHERE token = '" + req.params.token + "'";
+      con.query(ans,function(err, result){
+        if(result.length > 0) {
+            con.query("UPDATE clinics SET token = 0, confirmed = 1 WHERE email = ?", result[0].email, function(err, result){
+                console.log("account confimred 3");
+            });
+            return 0;
+        }else {
+            console.log("nothing")
+        }
+    });
+
+});
+
+function verificationEmail(email, token) {
+    transporter.sendMail({
+        from: "DocCal",
+        to: email,
+        subject: "User Verification",
+        text: "Hello, Thank you for registration in app DocCal! To finish you registration please confirm you email by clicking below link: http://localhost:3000/confirmed/" + token
+    });
 }
+
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Our app is running on port ${ PORT }`);
+    console.log(`Our app is running on port ${PORT}`);
 });
