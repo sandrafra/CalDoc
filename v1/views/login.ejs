@@ -1,11 +1,14 @@
 <%- include("./partials/header")%>
 <div class="login">
     <form action="/login" method="post">
-    	<input type="text" name="username" placeholder="Username" required="required" />
+    	<input type="text" name="email" placeholder="Email" required="required" />
         <input type="password" name="password" placeholder="Password" required="required" />
-        <input id="doctor" type="radio" name="user"/><label for="doctor"> Doctor</label>
-        <input id="patient" type="radio" name="user"/><label for="patient"> Patient</label>
+        <input id="doctor" type="radio" name="user" value="doctor" required/><label for="doctor"> Doctor</label>
+        <input id="patient" type="radio" name="user" value="patient"/><label for="patient"> Patient</label>
+        <input id="clinic" type="radio" name="user" value="clinic"/><label for="clinic"> Clinic</label>
         <button type="submit" class="btn btn-primary btn-large">Let me in.</button>
     </form>
-</div>
+    <a href="/forgot" class="btn btn-warning">Forget password?</a>
+    <a href="signup" class="btn btn-warning">Create new account</a>
+</div
 <%- include("./partials/footer")%>
