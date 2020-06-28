@@ -5,11 +5,13 @@ var express = require("express"),
     bodyParser = require("body-parser"),
     mysql = require("mysql"),
     bcrypt = require("bcrypt"),
-    jwt = require("jsonwebtoken"),
-    randomString = require("randomstring"),
     crypto = require("crypto"),
     async = require("async"),
+    flash = require("connect-flash"),
     passport = require("passport");
+
+const Window = require('window');
+const window = new Window();
 
 var MySQLStore = require('express-mysql-session')(session);
 var LocalStrategy = require('passport-local').Strategy;
@@ -44,7 +46,7 @@ app.use(session({
     saveUninitialized: true,
     expires: new Date(Date.now() + (3600))
 }));
-
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -69,6 +71,9 @@ passport.use(new LocalStrategy({
 
 app.use(function (req, res, next) {
     res.locals.currentUserID = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
+    res.locals.type =  "";
     next();
 });
 
@@ -104,21 +109,17 @@ app.get("/registerdoc", function (req, res) {
 });
 
 app.post("/registerdoc", function (req, res) {
-
-
     var confirmedPass = req.body.password2;
     con.query("SELECT email FROM doctors WHERE email = ?", [req.body.email], function (err, result) {
         if (err) {
             console.log(err);
         } else {
             if (result.length > 0) {
-                return res.render("registerdoc", {
-                    message: "This email is already used!"
-                });
+                req.flash("error", "E-mail is already used");
+                return res.render("registerdoc");
             } else if (req.body.password !== confirmedPass) {
-                return res.render("registerdoc", {
-                    message: "Passwords do not match!"
-                });
+                req.flash("error", "Passwords do not match");
+                return res.render("registerdoc");
             } else {
 
                 bcrypt.hash(req.body.password, 8, function (err, hash) {
@@ -129,7 +130,7 @@ app.post("/registerdoc", function (req, res) {
                             console.log(err);
                         } else {
                             verificationEmail(req.body.email, token);
-                            console.log("added new patinent");
+                            req.flash("success", "New account created. To confirm account please click link which was send to your e-mail");
                             res.redirect("/calendar");
                         }
                     });
@@ -149,13 +150,11 @@ app.post("/registerpat", function (req, res) {
             console.log(err);
         } else {
             if (result.length > 0) {
-                return res.render("registerpat", {
-                    message: "This email is already used!"
-                });
+                req.flash("error", "E-mail is already used");
+                return res.render("registerdoc");
             } else if (req.body.password !== confirmedPass) {
-                return res.render("registerpat", {
-                    message: "Passwords do not match!"
-                });
+                req.flash("error", "Passwords do not match");
+                return res.render("registerdoc");
             } else {
                 bcrypt.hash(req.body.password, 10, function (err, hash) {
                     var token = crypto.randomBytes(64).toString('hex');
@@ -165,7 +164,7 @@ app.post("/registerpat", function (req, res) {
                             console.log(err);
                         } else {
                             verificationEmail(req.body.email, token);
-                            console.log("added new patinent");
+                            req.flash("success", "New  doctor account created. To confirm account please click link which was send to your e-mail");
                             res.redirect("/calendar");
                         }
                     });
@@ -186,13 +185,11 @@ app.post("/registercln", function (req, res) {
             console.log(err);
         } else {
             if (result.length > 0) {
-                return res.render("registercln", {
-                    message: "This email is already used!"
-                });
+                req.flash("error", "E-mail is already used");
+                return res.render("registerdoc");
             } else if (req.body.password !== confirmedPass) {
-                return res.render("registercln", {
-                    message: "Passwords do not match!"
-                });
+                req.flash("error", "Passwords do not match");
+                return res.render("registerdoc");
             } else {
                 bcrypt.hash(req.body.password, 10, function (err, hash) {
                     var token = crypto.randomBytes(64).toString('hex');
@@ -203,7 +200,7 @@ app.post("/registercln", function (req, res) {
                             console.log(err);
                         } else {
                             verificationEmail(req.body.email, token);
-                            console.log("Added new clinic");
+                            req.flash("success", "New aclincccount created. To confirm account please click link which was send to your e-mail");
                             res.redirect("/calendar");
                         }
                     });
@@ -214,6 +211,7 @@ app.post("/registercln", function (req, res) {
 })
 app.get("/logout", function (req, res) {
     req.logOut();
+    req.flash("success", "Logged you out")
     req.session.destroy();
     res.redirect("/calendar");
 });
@@ -224,7 +222,6 @@ app.get("/calendar", function (req, res) {
 
 app.get('/patient', isLoggedin, function (req, res) {
     res.render("patient");
-    req.logOut;
 })
 
 app.get('/forgot', function (req, res) {
@@ -232,44 +229,41 @@ app.get('/forgot', function (req, res) {
 });
 
 app.post('/forgot', function (req, res, next) {
+    var type ="";
     async.waterfall([
         function (done) {
             crypto.randomBytes(20, function (err, buf) {
                 var token = buf.toString('hex');
-                done(err, token);
+                var ans1 = "SELECT * FROM patients WHERE email = '" + req.body.email + "'";
+                con.query(ans1, function (err, result) {
+                    console.log(result)
+                    if (result.length > 0) {
+                        type = "patients";
+                        done(err, token, type);
+                    }
+                });
+                var ans2 = "SELECT * FROM doctors WHERE email = '" + req.body.email + "'";
+                con.query(ans2, function (err, result) {
+                    console.log(result)
+                    if (result.length > 0) {
+                        type = "doctors";
+                        done(err, token, type);
+                    }
+                });
+                var ans3 = "SELECT * FROM clinics WHERE email = '" + req.body.email + "'";
+                con.query(ans3, function (err, result) {
+                    console.log(result)
+                    if (result.length > 0 ) {
+                        type = "clinics";
+                        done(err, token, type);
+                    }
+                });
+                
             });
         },
-        function (token, done) {
-            var email = "";
-            var type = "patients";
-            var ans1 = "SELECT * FROM patients WHERE email = '" + req.body.email + "'";
-            con.query(ans1, function (err, result) {
-                if (result.length > 0) {
-                    console.log("nic");
-                }
-            });
-            type = "doctors"
-            var ans2 = "SELECT * FROM doctors WHERE email = '" + req.body.email + "'";
-            con.query(ans2, function (err, result) {
-                if (result.length > 0) {
-                    console.log("nic2");
-
-                }
-            });
-            type = 'clinics'
-            var ans3 = "SELECT * FROM clinics WHERE email = '" + req.body.email + "'";
-            console.log(ans3);
-            con.query(ans3, function (err, result) {
-                if (result.length > 0 ) {
-                    console.log("nic3");
-
-                } else {
-                    return res.redirect("/forgot");
-                }
-            });
-            console.log(email);
+        function (token, type,  done) {
+            
             var update = "UPDATE " + type + " SET resettoken = '" + token + "', resetexpires = '" + (Date.now() + 3600000) + "' WHERE email = '" + req.body.email + "'";
-            console.log(update);
             con.query(update, function (err, result) {
                 if (err){
                     return res.redirect("/forgot");
@@ -296,7 +290,7 @@ app.post('/forgot', function (req, res, next) {
                      throw err;
                 } else {
                 console.log('mail sent');
-                // req.flash('success', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+                req.flash('success', 'An e-mail has been sent to ' + email + ' with further instructions.');
                 done(err, 'done');
                 }
             });
@@ -308,27 +302,33 @@ app.post('/forgot', function (req, res, next) {
 });
 
 app.get('/reset/:token', function (req, res) {
-    var ans = "SELECT resetexpires FROM patients WHERE resettoken = '" + req.params.token + "'";
+    var ans = "SELECT * FROM patients WHERE resettoken = '" + req.params.token + "'";
+    console.log(ans);
     con.query(ans, function (err, result) {
-        if (result.length > 0 && (result[0].resetexpires > Date.now())) {
-            res.render('reset', { token: req.params.token });
+        if (result.length > 0) {
+            console.log(Date.now());
+            console.log(result[0].resetexpires);
+            if(result[0].resetexpires > Date.now()){
+                console.log("sds");
+                return res.render('reset', { token: req.params.token, type: "patients"  });
+               }
         } 
     });
-    var ans2 = "SELECT resetexpires FROM doctors WHERE resettoken = '" + req.params.token + "'";
+    var ans2 = "SELECT * FROM doctors WHERE resettoken = '" + req.params.token + "'";
     con.query(ans2, function (err, result) {
-        if (result.length > 0 && (result[0].resetexpires > Date.now())) {
-            res.render('reset', { token: req.params.token });
+        if (result.length > 0) {
+            if(result[0].resetexpires > Date.now()){
+                return res.render('reset', { token: req.params.token, type: "doctors" });
+               }
         } 
     });
     var ans3 = "SELECT * FROM clinics WHERE resettoken = '" + req.params.token + "'";
     console.log(ans3);
     con.query(ans3, function (err, result) {
-        console.log(result);
-        console.log(Date.now());
         if (result.length > 0) {
             console.log(result[0].resetexpires);
             if(result[0].resetexpires > Date.now()){
-            res.render('reset', { token: req.params.token });
+             return res.render('reset', { token: req.params.token, type: "clinics"  });
             }
         } else {
             console.log("nothing")
@@ -336,50 +336,14 @@ app.get('/reset/:token', function (req, res) {
     });
 });
 
-app.post('/reset/:token', function (req, res) {
-    console.log("hehe");
+app.post('/reset/:token/:type', function (req, res) {
     async.waterfall([
         function (done) {
-            var email = "";
-            var type = "patients";
-            var ans1 = "SELECT * FROM patients WHERE resettoken = '" + req.params.token + "'";
-            con.query(ans1, function (err, result) {
-                if (result.length > 0) {
-                    email = result[0].email;
-                    type = "patients"
-                }
-            });
-            var ans2 = "SELECT * FROM doctors WHERE resettoken = '" + req.params.token + "'";
-            type="doctors";
-            con.query(ans2, function (err, result) {
-                if (result.length > 0) {
-                    email = result[0].email;
-                    type = "doctors";
-                }
-            });
-            var ans3 = "SELECT * FROM clinics WHERE resettoken = '" + req.params.token + "'";
-            type="clinics"
-            con.query(ans3, function (err, result) {
-                if (result.length > 0) {
-                    email = result[0].email;
-                    type = "clinics";
-                } else {
-                    return res.redirect("/forgot");
-                }
-            });
             if (req.body.password === req.body.confirm) {
                 bcrypt.hash(req.body.password, 8, function (err, hash) {
-                    email = '';
-                    var ans = "SELECT email FROM " + type + " WHERE resettoken = '" + req.params.token + "'";
-                    console.log(ans);
-                    con.query(ans, function(err, result){
-                        if(result.length>0){
-                            email = result[0].email;
-                        }
-                    })
-                    var update = "UPDATE " + type + " SET resettoken = 0, resetexpires = 0, password = '" + hash + "' WHERE resettoken = '" + req.params.token + "'";
+                    var update = "UPDATE " + req.params.type + " SET resettoken = 0, resetexpires = 0, password = '" + hash + "' WHERE resettoken = '" + req.params.token + "'";
                     console.log(update)
-                    con.query(update, function (err, result) {
+                    con.query(update, function (err) {
                         if(err){
                             console.log("Cannot update a password");
                             return res.redirect("/calendar");
@@ -390,7 +354,7 @@ app.post('/reset/:token', function (req, res) {
                     })
                 });
             } else {
-                // req.flash("error", "Passwords do not match.");
+                req.flash("error", "Passwords do not match.");
                 console.log("wrong password")
                 return res.redirect('back');
             }
@@ -404,7 +368,7 @@ app.post('/reset/:token', function (req, res) {
                     'This is a confirmation that the password for your account ' + email + ' has just been changed.\n'
             };
             transporter.sendMail(mailOptions, function (err) {
-                // req.flash('success', 'Success! Your password has been changed.');
+                req.flash('success', 'Success! Your password has been changed.');
                 done(err);
             });
         }
