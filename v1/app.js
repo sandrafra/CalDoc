@@ -105,21 +105,21 @@ app.get("/signup", function (req, res) {
     res.render("signup");
 });
 app.get("/registerdoc", function (req, res) {
-    res.render("registerdoc", { message: "" });
+    res.render("registerdoc");
 });
 
 app.post("/registerdoc", function (req, res) {
     var confirmedPass = req.body.password2;
-    con.query("SELECT email FROM doctors WHERE email = ?", [req.body.email], function (err, result) {
+    con.query("SELECT id FROM patients WHERE email= ? UNION ALL SELECT id FROM doctors WHERE email= ? UNION ALL SELECT id FROM clinics WHERE email= ?", [req.body.email, req.body.email, req.body.email], function (err, result) {
         if (err) {
             console.log(err);
         } else {
             if (result.length > 0) {
                 req.flash("error", "E-mail is already used");
-                return res.render("registerdoc");
+                res.redirect("back");
             } else if (req.body.password !== confirmedPass) {
                 req.flash("error", "Passwords do not match");
-                return res.render("registerdoc");
+                res.redirect("back");
             } else {
 
                 bcrypt.hash(req.body.password, 8, function (err, hash) {
@@ -145,16 +145,16 @@ app.get("/registerpat", function (req, res) {
 });
 app.post("/registerpat", function (req, res) {
     var confirmedPass = req.body.password2;
-    con.query("SELECT email FROM patients WHERE email = ?", [req.body.email], function (err, result) {
+    con.query("SELECT id FROM patients WHERE email= ? UNION ALL SELECT id FROM doctors WHERE email= ? UNION ALL SELECT id FROM clinics WHERE email= ?", [req.body.email, req.body.email, req.body.email], function (err, result) {
         if (err) {
             console.log(err);
         } else {
             if (result.length > 0) {
                 req.flash("error", "E-mail is already used");
-                return res.render("registerdoc");
+                res.redirect("back");
             } else if (req.body.password !== confirmedPass) {
                 req.flash("error", "Passwords do not match");
-                return res.render("registerdoc");
+                res.redirect("back");
             } else {
                 bcrypt.hash(req.body.password, 10, function (err, hash) {
                     var token = crypto.randomBytes(64).toString('hex');
@@ -180,16 +180,16 @@ app.get('/registercln', function (req, res) {
 
 app.post("/registercln", function (req, res) {
     var confirmedPass = req.body.password2;
-    con.query("SELECT email FROM clinics WHERE email = ?", [req.body.email], function (err, result) {
+    con.query("SELECT id FROM patients WHERE email= ? UNION ALL SELECT id FROM doctors WHERE email= ? UNION ALL SELECT id FROM clinics WHERE email= ?", [req.body.email, req.body.email, req.body.email], function (err, result) {
         if (err) {
             console.log(err);
         } else {
             if (result.length > 0) {
                 req.flash("error", "E-mail is already used");
-                return res.render("registerdoc");
+                res.redirect("back");
             } else if (req.body.password !== confirmedPass) {
                 req.flash("error", "Passwords do not match");
-                return res.render("registerdoc");
+                res.redirect("back");
             } else {
                 bcrypt.hash(req.body.password, 10, function (err, hash) {
                     var token = crypto.randomBytes(64).toString('hex');
