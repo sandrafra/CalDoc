@@ -8,10 +8,10 @@ var express = require("express"),
     crypto = require("crypto"),
     async = require("async"),
     flash = require("connect-flash"),
+    google = require("googleapis"), 
     passport = require("passport");
 
-const Window = require('window');
-const window = new Window();
+app.locals.user = "";
 
 var MySQLStore = require('express-mysql-session')(session);
 var LocalStrategy = require('passport-local').Strategy;
@@ -58,22 +58,22 @@ passport.deserializeUser(function (user_id, done) {
     done(null, user_id);
 });
 
-
 passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
     passReqToCallback: true
 },
-    function (req, email, password, done) {
+    function (req, email, password,done) {
         profileLogin(req.body.user, req.body, done);
-    }
+        }
 ));
 
 app.use(function (req, res, next) {
+    
     res.locals.currentUserID = req.user;
     res.locals.error = req.flash("error");
     res.locals.success = req.flash("success");
-    res.locals.type =  "";
+    res.locals.type = app.locals.user;
     next();
 });
 
@@ -96,7 +96,7 @@ app.get("/login", function (req, res) {
 
 app.post('/login',
     passport.authenticate('local', {
-        successRedirect: '/calendar',
+        successRedirect: '/home',
         failureRedirect: '/login'
     })
 );
@@ -131,7 +131,7 @@ app.post("/registerdoc", function (req, res) {
                         } else {
                             verificationEmail(req.body.email, token);
                             req.flash("success", "New account created. To confirm account please click link which was send to your e-mail");
-                            res.redirect("/calendar");
+                            res.redirect("/home");
                         }
                     });
                 });
@@ -165,7 +165,7 @@ app.post("/registerpat", function (req, res) {
                         } else {
                             verificationEmail(req.body.email, token);
                             req.flash("success", "New  doctor account created. To confirm account please click link which was send to your e-mail");
-                            res.redirect("/calendar");
+                            res.redirect("/home");
                         }
                     });
                 });
@@ -201,7 +201,7 @@ app.post("/registercln", function (req, res) {
                         } else {
                             verificationEmail(req.body.email, token);
                             req.flash("success", "New aclincccount created. To confirm account please click link which was send to your e-mail");
-                            res.redirect("/calendar");
+                            res.redirect("/home");
                         }
                     });
                 });
@@ -210,18 +210,45 @@ app.post("/registercln", function (req, res) {
     });
 })
 app.get("/logout", function (req, res) {
-    req.logOut();
-    req.flash("success", "Logged you out")
+    req.logout();
+    req.flash("success", "Logged you out");
+    res.locals.currentUserID = undefined;
     req.session.destroy();
-    res.redirect("/calendar");
+    res.redirect("/home");
 });
 
-app.get("/calendar", function (req, res) {
+app.get("/home", function (req, res) {
     res.render("index");
 });
 
-app.get('/patient', isLoggedin, function (req, res) {
-    res.render("patient");
+app.get('/patient', isLoggedin, isPatient, function (req, res) {
+    con.query("SELECT id, name, surname, email FROM patients WHERE id = ?",req.user, function(err, result){
+        if(err) throw err;
+        else {
+            res.render('patient', {patient: result[0]});
+        }
+    });
+});
+
+app.post('/patient/:id', isLoggedin, isPatient, function (req, res) {
+    con.query("SELECT name, surname, email FROM patients WHERE id = ?",req.params.id, function(err, result){
+        if(err) throw err;
+        else {
+            var patient = [req.body.name, req.body.surname, req.body.email, req.params.id];
+            con.query("UPDATE patients SET name =  ?, surname = ?, email= ? WHERE id = ?", patient, function(err){
+                if (err) throw err;
+                else {
+                    req.flash("success", "Profile settings has been updated succefuly");
+                    res.redirect("/patient");
+                }
+            });
+            
+        }
+    });
+});
+
+app.get("/patient/password", isPatient, isLoggedin, function(req,res){
+    res.render("editpass");
 })
 
 app.get('/forgot', function (req, res) {
@@ -229,7 +256,6 @@ app.get('/forgot', function (req, res) {
 });
 
 app.post('/forgot', function (req, res, next) {
-    var type ="";
     async.waterfall([
         function (done) {
             crypto.randomBytes(20, function (err, buf) {
@@ -346,7 +372,7 @@ app.post('/reset/:token/:type', function (req, res) {
                     con.query(update, function (err) {
                         if(err){
                             console.log("Cannot update a password");
-                            return res.redirect("/calendar");
+                            return res.redirect("/home");
                             
                         } else {
                             done(err, email);
@@ -373,7 +399,7 @@ app.post('/reset/:token/:type', function (req, res) {
             });
         }
     ], function (err) {
-        res.redirect('/calendar');
+        res.redirect('/home');
     });
 });
 
@@ -383,7 +409,7 @@ app.get("/confirmed/:token", function (req, res) {
         if (result.length > 0) {
             con.query("UPDATE patients SET token = 0, confirmed = 1 WHERE email = ?", result[0].email, function (err, result) {
                 console.log("account confimred 1");
-                return res.redirect("/calendar");
+                return res.redirect("/home");
             });
             return 0;
         } else {
@@ -395,7 +421,7 @@ app.get("/confirmed/:token", function (req, res) {
         if (result.length > 0) {
             con.query("UPDATE doctors SET token = 0, confirmed = 1 WHERE email = ?", result[0].email, function (err, result) {
                 console.log("account confimred 2");
-                return res.redirect("/calendar");
+                return res.redirect("/home");
             });
             return 0;
         } else {
@@ -407,7 +433,7 @@ app.get("/confirmed/:token", function (req, res) {
         if (result.length > 0) {
             con.query("UPDATE clinics SET token = 0, confirmed = 1 WHERE email = ?", result[0].email, function (err, result) {
                 console.log("account confimred 3");
-                return res.redirect("/calendar");
+                return res.redirect("/home");
             });
             return 0;
         } else {
@@ -417,8 +443,36 @@ app.get("/confirmed/:token", function (req, res) {
 
 });
 
+app.get("/clinics", function(req,res){
+    con.query("SELECT name, city, zipcode, street, phone, email from clinics", function(err, result){
+        if(err) throw err;
+        else {
+            res.render('clinics', {clinics: result});
+        }
+    })
+    
+});
+
+app.get("/doctors", function(req,res){
+    con.query("SELECT id, name, surname, email, specialization FROM doctors", function(err, result){
+        if(err) throw err;
+        else {
+            res.render('doctors', {doctors: result});
+        }
+    })
+});
+
+
+
+
+
+
+
+//MIDDLEWARE
+
 function profileLogin(type, requestBody, done) {
     var answer = 'SELECT * FROM ' + type + 's WHERE email = ?';
+        console.log(app.locals.user);
     con.query(answer, requestBody.email, function (err, result, fields) {
         if (err) {
             console.log(err);
@@ -430,7 +484,9 @@ function profileLogin(type, requestBody, done) {
                         var answer2 = 'SELECT confirmed FROM ' + type + 's WHERE email = ?';
                         con.query(answer2, requestBody.email, function (err, confirmed) {
                             if (confirmed[0].confirmed === 1) {
+                                app.locals.user = type;
                                 return done(null, result[0].id);
+
                             }
                             else {
                                 console.log("account is not confimred yet")
@@ -451,6 +507,7 @@ function profileLogin(type, requestBody, done) {
     });
 };
 
+
 function verificationEmail(email, token) {
     transporter.sendMail({
         from: "DocCal",
@@ -464,7 +521,29 @@ function isLoggedin(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.redirect("/");
+    req.flash("error", "Please login first!");
+    res.redirect("/login");
+}
+
+function isPatient(req,res,next) {
+    if(app.locals.user == "patient"){
+        return next();
+    }
+    res.redirect("/home");
+}
+
+function isDoctor(req,res,next) {
+    if(app.locals.user == "doctor"){
+        return next();
+    }
+    res.redirect("/home");
+}
+
+function isClinic(req,res,next) {
+    if(app.locals.user == "clinic"){
+        return next();
+    }
+    res.redirect("/home");
 }
 
 const PORT = process.env.PORT || 3000;

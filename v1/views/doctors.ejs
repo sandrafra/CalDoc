@@ -1,0 +1,24 @@
+<%- include("./partials/header")%>
+
+<div class="container">
+    <div class="container">
+        <h1>Doctors</h1>
+        <p>View doctors avaliable on the DocCal</p>
+    </div>
+    <% doctors.forEach(function(doctor){ %>
+        <div class="col-md-3 col-sm-6">
+            <div class="thumbnail">
+                <h3><%= doctor.name%></h4><h4><%= doctor.surname%></h4>
+                <div class="caption">
+                    <h4>Adres</h4>
+                    <h6><%= doctor.specialization%></h6>
+                    <h6><%= doctor.email%></h6>
+                       </div>
+                                    <p>
+                    <a href="/doctors/<%=doctor.id%>" class="btn btn-primary">More Info</a>
+                </p>
+            </div>
+        </div>
+        <%}) %>
+</div>
+<%- include("./partials/footer")%>

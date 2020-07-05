@@ -11,27 +11,62 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="/calendar">DocCal</a>
+        <a class="navbar-brand" href="/home">DocCal</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="nav collapse navbar-collapse " id="navbarSupportedContent">
           <ul class="navbar-nav middle">
             <li class="nav-item">
-              <a class="nav-link hvr-grow" href="/calendar">Home   <span class="sr-only">(current)</span></a>
+              <a class="nav-link hvr-grow" href="/home">Home  <span class="sr-only">(current)</span></a>
+            </li>
+            <%if(type === "doctors"){%>
+            <li class="nav-item">
+              <a class="nav-link hvr-grow" href="/doctor">Profile  <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link hvr-grow" href="/calendar">Home   <span class="sr-only">(current)</span></a>
+              <a class="nav-link hvr-grow" href="/doctor/clinics">My Clinics  <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link hvr-grow" href="/calendar">Home   <span class="sr-only">(current)</span></a>
+              <a class="nav-link hvr-grow" href="/doctor/patients">My Patients  <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link hvr-grow" href="/calendar">Home   <span class="sr-only">(current)</span></a>
+              <a class="nav-link hvr-grow" href="/doctor/calendar">Calendar  <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link hvr-grow" href="/calendar">Home   <span class="sr-only">(current)</span></a>
-            </li>
+            <% } else if(type === "patient"){%>
+              <li class="nav-item">
+                <a class="nav-link hvr-grow" href="/patient">Profil <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link hvr-grow" href="/patient/appointments">Appointments  <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link hvr-grow" href="/patient/medications">Medications  <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link hvr-grow" href="/patient/fidnings">Findings <span class="sr-only">(current)</span></a>
+              </li>
+              <% } else if(type === "clinic"){%>
+                <li class="nav-item">
+                  <a class="nav-link hvr-grow" href="/clinic/:id">Profile  <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link hvr-grow" href="/clinic/:id/doctor"> My Doctors  <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link hvr-grow" href="/clinic/:id/patient">My Patients  <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link hvr-grow" href="/clinic/:id/calendar">My Calendar <span class="sr-only">(current)</span></a>
+                </li>
+              <%} else {%>
+              <li class="nav-item">
+                <a class="nav-link hvr-grow" href="/clinics">Clinics <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link hvr-grow" href="/doctors">Doctors  <span class="sr-only">(current)</span></a>
+              </li>
+                <%}%>
           </ul>
           <ul class="navbar-nav ml-auto">
             <%if(!currentUserID){%>

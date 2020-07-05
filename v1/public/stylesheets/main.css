@@ -122,3 +122,13 @@ a:hover {
   .caption i{
 	  font-size: 30px;
   }
+
+  .thumbnail {
+	border: 2px solid rgb(65, 136, 177);
+	padding: 10%;
+	margin: 5px;
+  }
+  .thumbnail .caption {
+	border: 1px, solid grey;
+	margin-bottom: 2px;
+  }
