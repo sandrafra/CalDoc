@@ -37,6 +37,7 @@
     "flash": "^1.1.0",
     "googleapis": "^52.1.0",
     "jsonwebtoken": "^8.5.1",
+    "method-override": "^3.0.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
     "nodemailer": "^6.4.10",
