@@ -42,7 +42,7 @@ router.post("/register", function (req, res) {
 });
 
 router.get('/', middleware.isLoggedin, middleware.isDoctor, function (req, res) {
-    con.query("SELECT id, name, surname, email FROM doctors WHERE id = ?", req.user, function (err, result) {
+    con.query("SELECT id, name, surname, email, specialization FROM doctors WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
         else {
             res.render('doctors/doctor', { doctor: result[0] });
@@ -51,8 +51,8 @@ router.get('/', middleware.isLoggedin, middleware.isDoctor, function (req, res) 
 });
 
 router.post('/:id', middleware.isLoggedin, middleware.isDoctor, middleware.checkAuth, function (req, res) {
-            var doctor = [req.body.name, req.body.surname, req.body.email, req.params.id];
-            con.query("UPDATE doctors SET name =  ?, surname = ?, email= ? WHERE id = ?", doctor, function (err) {
+            var doctor = [req.body.name, req.body.surname, req.body.email, req.body.specialization, req.params.id];
+            con.query("UPDATE doctors SET name =  ?, surname = ?, email= ?, specialization = ? WHERE id = ?", doctor, function (err) {
                 if (err) throw err;
                 else {
                     req.flash("success", "Profile settings has been updated succefuly");
@@ -62,7 +62,7 @@ router.post('/:id', middleware.isLoggedin, middleware.isDoctor, middleware.check
 });
 
 router.get("/password", middleware.isDoctor, middleware.isLoggedin, function (req, res) {
-    con.query("SELECT id, name, surname, email FROM doctors WHERE id = ?", req.user, function (err, result) {
+    con.query("SELECT id, name, surname, email, specialization FROM doctors WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
         else {
             res.render("doctors/editpass", { doctor: result[0] });
