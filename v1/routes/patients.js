@@ -43,7 +43,7 @@ router.get('/', middleware.isLoggedin, middleware.isPatient, function (req, res)
     con.query("SELECT id, name, surname, email FROM patients WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
         else {
-            res.render('patient', { patient: result[0] });
+            res.render('patients/patient', { patient: result[0] });
         }
     });
 });
@@ -55,7 +55,7 @@ router.post('/:id', middleware.isLoggedin, middleware.isPatient, middleware.chec
                 if (err) throw err;
                 else {
                     req.flash("success", "Profile settings has been updated succefuly");
-                    res.redirect("/patient");
+                    res.redirect("/patients/patient");
                 }
             });
 });
@@ -64,7 +64,7 @@ router.get("/password", middleware.isPatient, middleware.isLoggedin, function (r
     con.query("SELECT id, name, surname, email FROM patients WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
         else {
-            res.render("editpass", { patient: result[0] });
+            res.render("patients/editpass", { patient: result[0] });
         }
     });
 
@@ -83,11 +83,11 @@ router.post("/:id/password", middleware.isPatient, middleware.isLoggedin, middle
                                 con.query(update, function (err) {
                                     if (err) {
                                         req.flash("error", "Cannot update the password");
-                                        return res.redirect("/patient");
+                                        return res.redirect("/patients/patient");
 
                                     } else {
                                         req.flash("success", "Password changed");
-                                        return res.redirect("/patient/password");
+                                        return res.redirect("/patients/patient/password");
                                     }
                                 });
                             }
@@ -103,7 +103,7 @@ router.post("/:id/password", middleware.isPatient, middleware.isLoggedin, middle
             }
         } else {
             req.flash("success", "Profile settings has been updated succefuly");
-        res.redirect("/patient");
+        res.redirect("/patients/patient");
         }
     });
 });

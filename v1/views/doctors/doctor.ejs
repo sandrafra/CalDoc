@@ -1,0 +1,23 @@
+<%- include("../partials/header")%>
+<div class="container">
+    <h1>My profile</h1>
+    <div class="row">
+        <div class="col-4">
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="/doctors/doctor">Personal Settings</a>
+                <a class="nav-link" href="/doctors/doctor/password">Delete Account</a>
+            </nav>
+        </div>
+        <div class="col-6">
+            <form action="/doctors/doctor/<%=doctor.id%>" method="POST">
+                <input type="text" name="name" placeholder="Name" required="required" value="<%=doctor.name%>"/>
+                <input type="text" name="surname" placeholder="Surname" required="required" value="<%=doctor.surname%>"/>
+                <input type="email" name="email" placeholder="Email" required="required" value="<%=doctor.email%>"/>
+                <button type="submit" class="btn btn-primary btn-large">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<%- include("../partials/footer")%>
