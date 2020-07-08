@@ -242,21 +242,21 @@ router.get("/confirmed/:token", function (req, res) {
 
 });
 
-router.get("/clinics", function (req, res) {
+router.get("/allclinics", function (req, res) {
     con.query("SELECT name, city, zipcode, street, phone, email from clinics", function (err, result) {
         if (err) throw err;
         else {
-            res.render('clinics', { clinics: result });
+            res.render('allclinics', { clinics: result });
         }
     })
 
 });
 
-router.get("/doctors", function (req, res) {
+router.get("/alldoctors", function (req, res) {
     con.query("SELECT id, name, surname, email, specialization FROM doctors", function (err, result) {
         if (err) throw err;
         else {
-            res.render('doctors', { doctors: result });
+            res.render('alldoctors', { doctors: result });
         }
     })
 });
