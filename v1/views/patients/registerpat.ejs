@@ -1,9 +1,6 @@
-<%- include("./partials/header")%>
-<%if (message) {%>
-<h4 class="alert alert-danger"><%=message%></h4>
-<%}%>
+<%- include("../partials/header")%>
 <div class="register">
-    <form action="/patients/registerpat" method="post">
+    <form action="/patients/register" method="post">
         <input type="text" name="name" placeholder="Name" required="required" />
         <input type="text" name="surname" placeholder="Surname" required="required" />
         <input type="email" name="email" placeholder="Email" required="required" />
@@ -13,4 +10,4 @@
         <button type="submit" class="btn btn-primary btn-large">Let me in.</button>
     </form>
 </div>
-<%- include("./partials/footer")%>
+<%- include("../partials/footer")%>

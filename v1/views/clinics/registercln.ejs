@@ -1,11 +1,9 @@
-<%- include("./partials/header")%>
-<%if (message) {%>
-    <h4 class="alert alert-danger"><%=message%></h4>
-    <%}%>
+<%- include("../partials/header")%>
+
 <h2>Register as a Clinic</h2>
 
 <div class="register">
-    <form action="/registercln" method="post">
+    <form action="/clinics/registercln" method="post">
         <input type="text" name="name" placeholder="Clinic's Name" required="required" />
         <input type="email" name="email" placeholder="Email" required="required" />
         <input type="tel"  name="phone" placeholder="Phone" pattern="[0-9]{3}[0-9]{3}[0-9]{3}" required>
@@ -18,4 +16,4 @@
         <button type="submit" class="btn btn-primary btn-large">Let me in.</button>
     </form>
 </div>
-<%- include("./partials/footer")%>
+<%- include("../partials/footer")%>

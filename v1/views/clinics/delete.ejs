@@ -10,11 +10,8 @@
             </nav>
         </div>
         <div class="col-6">
-            <form action="/clinics/clinic/<%=clinic.id%>/password" method="POST">
-                <input type="password" name="currentpassword" placeholder=" Current Password" required="required"/>
-                <input type="password" name="password" placeholder="Password" required="required"/>
-                <input type="password" name="password2" placeholder="Repate password" required="required"/>
-                <button type="submit" class="btn btn-primary btn-large">Change password</button>
+            <form action="/clinics/clinic/<%=clinic.id%>/delete" method="POST">
+                <button type="submit" class="btn btn-primary btn-large">Delete Account</button>
             </form>
         </div>
     </div>

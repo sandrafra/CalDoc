@@ -6,7 +6,7 @@ var con = require("../db");
 var bcrypt = require("bcrypt");
 
 router.get("/register", function (req, res) {
-    res.render("registerpat", { message: "" });
+    res.render("patients/registerpat");
 });
 router.post("/register", function (req, res) {
     var confirmedPass = req.body.password2;
@@ -106,6 +106,28 @@ router.post("/:id/password", middleware.isPatient, middleware.isLoggedin, middle
         res.redirect("/patients/patient");
         }
     });
+});
+router.get("/delete", function(req,res){
+    con.query("SELECT id, name FROM patients WHERE id = ?", req.user, function (err, result) {
+        if (err) throw err;
+        else {
+            res.render("patients/delete", { patient: result[0] });
+        }
+    });
+});
+router.post("/:id/delete", function(req,res){
+    con.query("DELETE FROM patients WHERE id =? ", req.params.id, function(err){
+        if (err) throw err;
+        else {
+            req.flash("error", "Account deleted");
+            req.logout();
+            res.redirect('/home');
+        }
+    });
+});
+
+router.get("/appointments", function(req,res){
+    res.render("patients/appointments");
 });
 
 module.exports = router;

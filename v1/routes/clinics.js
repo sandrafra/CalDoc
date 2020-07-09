@@ -6,12 +6,12 @@ var con = require("../db");
 var bcrypt = require("bcrypt");
 
 router.get('/register', function (req, res) {
-    res.render("registercln", { message: "" });
+    res.render("clinics/registercln");
 });
 
 router.post("/register", function (req, res) {
     var confirmedPass = req.body.password2;
-    con.query("SELECT id FROM patients WHERE email= ? UNION ALL SELECT id FROM doctors WHERE email= ? UNION ALL SELECT id FROM clinics WHERE email= ?", [req.body.email, req.body.email, req.body.email], function (err, result) {
+    con.query("SELECT id FROM clinics WHERE email= ? UNION ALL SELECT id FROM doctors WHERE email= ? UNION ALL SELECT id FROM clinics WHERE email= ?", [req.body.email, req.body.email, req.body.email], function (err, result) {
         if (err) {
             console.log(err);
         } else {
@@ -105,6 +105,25 @@ router.post("/:id/password", middleware.isClinic, middleware.isLoggedin, middlew
         } else {
             req.flash("success", "Profile settings has been updated succefuly");
         res.redirect("/clinics/clinic");
+        }
+    });
+});
+
+router.get("/delete", function(req,res){
+    con.query("SELECT id, name FROM clinics WHERE id = ?", req.user, function (err, result) {
+        if (err) throw err;
+        else {
+            res.render("clinics/delete", { clinic: result[0] });
+        }
+    });
+});
+router.post("/:id/delete", function(req,res){
+    con.query("DELETE FROM clinics WHERE id =? ", req.params.id, function(err){
+        if (err) throw err;
+        else {
+            req.flash("error", "Account deleted");
+            req.logout();
+            res.redirect('/home');
         }
     });
 });

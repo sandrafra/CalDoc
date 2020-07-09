@@ -10,11 +10,10 @@
             </nav>
         </div>
         <div class="col-6">
-            <form action="/patients/patient/<%=patient.id%>" method="POST">
-                <input type="text" name="name" placeholder="Name" required="required" value="<%=patient.name%>"/>
-                <input type="text" name="surname" placeholder="Surname" required="required" value="<%=patient.surname%>"/>
-                <input type="email" name="email" placeholder="Email" required="required" value="<%=patient.email%>"/>
-                <button type="submit" class="btn btn-primary btn-large">Save</button>
+            <h1>Are you sure you want to delete your account?
+                Deleting your account is permanent and will remove all content. Are you sure you want to delete your account?</h1>
+            <form action="/patients/patient/<%=patient.id%>/delete" method="POST">
+                <button type="submit" class="btn btn-primary btn-large">Delete Account</button>
             </form>
         </div>
     </div>
