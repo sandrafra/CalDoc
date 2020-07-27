@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/sandrafra/CalDoc#readme",
   "dependencies": {
+    "@fullcalendar/core": "^5.1.0",
+    "@fullcalendar/daygrid": "^5.1.0",
     "async": "^3.2.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
@@ -35,6 +37,7 @@
     "express-mysql-session": "^2.1.4",
     "express-session": "^1.17.1",
     "flash": "^1.1.0",
+    "fullcalendar": "^5.1.0",
     "googleapis": "^52.1.0",
     "jsonwebtoken": "^8.5.1",
     "method-override": "^3.0.0",

@@ -7,23 +7,23 @@
     </div>
     <div class="row text-center">
         <% clinics.forEach(function(clinic){ %>
-            <div class="col-md-3 col-sm-6">
-                <div class="thumbnail">
-                    <h4><%= clinic.name%></h4>
-                    <div class="caption thumbnail">
-                        <h4>Adres</h3>
+        <div class="col-md-3 col-sm-6">
+            <div class="thumbnail">
+                <h4><%= clinic.name%></h4>
+                <div class="caption thumbnail">
+                    <h4>Adres</h3>
                         <h6><%= clinic.city%></h6>
                         <h6><%= clinic.zipcode%></h6>
                         <h6><%= clinic.street%></h6>
                         <h6><%= clinic.email%></h6>
                         <h6><%= clinic.phone%></h6>
-                    </div>
-                                        <p>
-                        <a href="/clinics/<%=clinic.id%>" class="btn btn-primary">More Info</a>
-                    </p>
                 </div>
+                <form action="/clinics/clinic/<%=clinic.id%>/doctors" method="POST">
+                    <button type="submit" class="btn btn-primary">See doctors</button>
+                    </form>
             </div>
-            <%}) %>
+        </div>
+        <%}) %>
     </div>
 </div>
 

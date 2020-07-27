@@ -4,6 +4,7 @@ var passport = require("passport");
 var middleware = require("../middleware");
 var con = require("../db");
 var bcrypt = require("bcrypt");
+var crypto = require("crypto");
 
 router.get("/register", function (req, res) {
     res.render("patients/registerpat");
@@ -28,7 +29,7 @@ router.post("/register", function (req, res) {
                         if (err) {
                             console.log(err);
                         } else {
-                            verificationEmail(req.body.email, token);
+                            middleware.verificationEmail(req.body.email, token);
                             req.flash("success", "New  doctor account created. To confirm account please click link which was send to your e-mail");
                             res.redirect("/home");
                         }
@@ -126,8 +127,50 @@ router.post("/:id/delete", function(req,res){
     });
 });
 
-router.get("/appointments", function(req,res){
-    res.render("patients/appointments");
+router.get("/appointments/:id", async function(req,res){
+    var clinics, specializations, docclin;
+     clinics = await con.promise().query("SELECT * FROM clinics")
+     specializations = await con.promise().query("SELECT * FROM specialization")
+     docclin = await con.promise().query("SELECT * from docclin");
+    res.render("patients/appointments", {clinics: clinics[0], specializations: specializations[0], docclins: docclin[0], patient: req.params.id});
 });
+
+router.post("/appointments/:id/new", function(req,res){
+    con.query("SELECT id FROM docclin WHERE IdC = '" + req.body.clinic + "' AND IdD = '"+ req.body.doctor+"'", function(err, result){
+        var newevent= [req.params.id, result[0].id, req.body.date, req.body.start, req.body.end];
+        con.query("INSERT INTO event (idP, idDC,date, startslot, endslot) values (?,?,?,?,?)", newevent, function(err){
+            if (err){
+                throw err;
+            } else{
+                res.redirect("back");
+            }
+
+        })
+    });
+})
+
+//dynamic dropdown
+router.get("/test",function(req,res){
+    con.query("SELECT id, IdD FROM docclin WHERE IdC = '" + req.query.clinicId + "'", async function(err,result){
+        if(err) throw err;
+        var doctors = [];
+        for(i = 0; i<result.length; i++){
+         var newdoctor = await con.promise().query("SELECT id,name, surname FROM doctors WHERE specialization = '" + req.query.specId +"' and id= '" + result[i].IdD +"'")
+         if (err) throw err;
+            doctors.push(newdoctor[0]);
+        }
+        res.send(doctors);
+    });
+});
+
+router.get("/event", function(req,res){
+    con.query("SELECT id, starthour, endhour FROM docclin WHERE IdC = '"+req.query.clinId+ "' AND IdD = '" +req.query.docId+"'", function(err,result){
+            con.query("SELECT * FROM event WHERE idDC = '" + result[0].id+ "'", function(err, events){
+                console.log(events)
+                results = [result[0], events[0]]
+                res.send(results);
+            });
+        });   
+})
 
 module.exports = router;

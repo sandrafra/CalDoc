@@ -1,6 +1,5 @@
 var express = require("express"),
     app = express(),
-    nodemailer = require('nodemailer'),
     session = require("express-session"),
     bodyParser = require("body-parser"),
     bcrypt = require("bcrypt"),
@@ -12,13 +11,10 @@ var express = require("express"),
     indexRoutes = require("./routes/index"),
     middleware = require("./middleware"),
     con = require('./db'),
+    path = require('path'),
     methodOverride = require("method-override");
 
 app.locals.user = "";
-
-var MySQLStore = require('express-mysql-session')(session);
-var LocalStrategy = require('passport-local').Strategy;
-require("dotenv").config();
 
 var options = {
     host: process.env.DB_HOST,
@@ -26,6 +22,12 @@ var options = {
     password: process.env.DB_PASS,
     database: process.env.DATABASE
 };
+
+var MySQLStore = require('express-mysql-session')(session);
+var LocalStrategy = require('passport-local').Strategy;
+require("dotenv").config();
+
+
 var sessionStore = new MySQLStore(options);
 
 app.use(session({

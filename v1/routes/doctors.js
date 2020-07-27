@@ -4,9 +4,12 @@ var passport = require("passport");
 var middleware = require("../middleware");
 var con = require("../db");
 var bcrypt = require("bcrypt");
+var crypto = require("crypto");
 
 router.get("/register", function (req, res) {
-    res.render("doctors/registerdoc");
+    con.query("SELECT * FROM specialization", function (err, result) {
+        res.render("doctors/registerdoc", {specializations: result});
+    });
 });
 
 router.post("/register", function (req, res) {
@@ -30,7 +33,7 @@ router.post("/register", function (req, res) {
                         if (err) {
                             console.log(err);
                         } else {
-                            verificationEmail(req.body.email, token);
+                            middleware.verificationEmail(req.body.email, token);
                             req.flash("success", "New account created. To confirm account please click link which was send to your e-mail");
                             res.redirect("/home");
                         }
@@ -41,28 +44,60 @@ router.post("/register", function (req, res) {
     });
 });
 
-router.get('/', middleware.isLoggedin, middleware.isDoctor, function (req, res) {
-    con.query("SELECT id, name, surname, email, specialization FROM doctors WHERE id = ?", req.user, function (err, result) {
+router.post("/:idD/clinics", function (req, res) {
+    console.log(req.params.idD)
+    con.query("SELECT IdC FROM docclin WHERE IdD = ?", req.params.idD, async function (err, results) {
         if (err) throw err;
         else {
-            res.render('doctors/doctor', { doctor: result[0] });
+            if (results.length > 0) {
+                var clinics = [];
+                var name = [];
+                for (var i = 0; i < results.length; i++) {
+                    var answer;
+                    answer = "SELECT * FROM clinics WHERE id = '" + results[i].IdC + "'";
+                    var rows = await con.promise().query(answer);
+                    if (rows.length > 0) {
+                        clinics.push(rows[0]);
+                    }
+                    con.query("SELECT name, surname FROM doctors WHERE id = ?", req.params.idD, function (err, names) {
+                        if (err) throw err;
+                        else {
+                            name = [names[0].name, names[0].surname];
+                        }
+                    })
+
+                }
+            }
+            res.render("doctors/clinics", { clinics: clinics, name: name });
+        }
+    });
+});
+
+router.get('/', function (req, res) {
+    con.query("SELECT doctors.id, doctors.name, doctors.surname, doctors.email, specialization.specialization FROM doctors INNER JOIN specialization ON specialization.id = doctors.specialization and doctors.id = ?", req.user, function (err, result) {
+        if (err) throw err;
+        else {
+            con.query("SELECT * FROM specialization", function (err, spec) {
+                res.render('doctors/doctor', { doctor: result[0], specializations: spec });
+            });
+           
         }
     });
 });
 
 router.post('/:id', middleware.isLoggedin, middleware.isDoctor, middleware.checkAuth, function (req, res) {
-            var doctor = [req.body.name, req.body.surname, req.body.email, req.body.specialization, req.params.id];
-            con.query("UPDATE doctors SET name =  ?, surname = ?, email= ?, specialization = ? WHERE id = ?", doctor, function (err) {
-                if (err) throw err;
-                else {
-                    req.flash("success", "Profile settings has been updated succefuly");
-                    res.redirect("/doctors/doctor");
-                }
-            });
+    var doctor = [req.body.name, req.body.surname, req.body.email, req.body.specialization, req.params.id];
+    con.query("UPDATE doctors SET name =  ?, surname = ?, email= ?, specialization = ? WHERE id = ?", doctor, function (err) {
+        if (err) throw err;
+        else {
+            req.flash("success", "Profile settings has been updated succefuly");
+            res.redirect("/doctors/doctor");
+        }
+    });
 });
 
 router.get("/password", middleware.isDoctor, middleware.isLoggedin, function (req, res) {
-    con.query("SELECT id, name, surname, email, specialization FROM doctors WHERE id = ?", req.user, function (err, result) {
+    con.query("SELECT doctors.id, doctors.name, doctors.surname, doctors.email, specialization.specialization FROM doctors INNER JOIN specialization ON specialization.id = doctors.specialization and doctors.id = 1", req.user, function (err, result) {
         if (err) throw err;
         else {
             res.render("doctors/editpass", { doctor: result[0] });
@@ -104,12 +139,12 @@ router.post("/:id/password", middleware.isDoctor, middleware.isLoggedin, middlew
             }
         } else {
             req.flash("success", "Profile settings has been updated succefuly");
-        res.redirect("/doctors/doctor");
+            res.redirect("/doctors/doctor");
         }
     });
 });
 
-router.get("/delete", function(req,res){
+router.get("/delete", function (req, res) {
     con.query("SELECT id, name FROM doctors WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
         else {
@@ -117,8 +152,8 @@ router.get("/delete", function(req,res){
         }
     });
 });
-router.post("/:id/delete", function(req,res){
-    con.query("DELETE FROM doctors WHERE id =? ", req.params.id, function(err){
+router.post("/:id/delete", function (req, res) {
+    con.query("DELETE FROM doctors WHERE id =? ", req.params.id, function (err) {
         if (err) throw err;
         else {
             req.flash("error", "Account deleted");

@@ -1,4 +1,4 @@
-var mysql = require('mysql');
+var mysql = require('mysql2');
 require("dotenv").config();
 
 var con = mysql.createConnection({
@@ -8,9 +8,9 @@ var con = mysql.createConnection({
     database: process.env.DATABASE
 });
 
-con.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!");
-});
+// con.connect(function (err) {
+//     if (err) throw err;
+//     console.log("Connected!");
+// });
 
 module.exports = con;

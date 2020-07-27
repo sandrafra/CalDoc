@@ -2,6 +2,16 @@ var middlewareObj = {};
 var con = require("../db");
 var bcrypt = require("bcrypt");
 var app = require("../app");
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+    service: process.env.MAIL_SERVICE,
+    auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+    },
+});
+
  
 middlewareObj.profileLogin =  function(req ,type, requestBody, done) {
     var answer = 'SELECT * FROM ' + type + 's WHERE email = ?';

@@ -9,13 +9,7 @@ var nodemailer = require('nodemailer');
 var bcrypt = require('bcrypt');
 
 
-let transporter = nodemailer.createTransport({
-    service: process.env.MAIL_SERVICE,
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-    },
-});
+
 
 
 router.get("/", function (req, res) {
@@ -243,7 +237,7 @@ router.get("/confirmed/:token", function (req, res) {
 });
 
 router.get("/allclinics", function (req, res) {
-    con.query("SELECT name, city, zipcode, street, phone, email from clinics", function (err, result) {
+    con.query("SELECT id, name, city, zipcode, street, phone, email from clinics", function (err, result) {
         if (err) throw err;
         else {
             res.render('allclinics', { clinics: result });
@@ -253,7 +247,7 @@ router.get("/allclinics", function (req, res) {
 });
 
 router.get("/alldoctors", function (req, res) {
-    con.query("SELECT id, name, surname, email, specialization FROM doctors", function (err, result) {
+    con.query("SELECT doctors.id, doctors.name, doctors.surname, doctors.email, specialization.specialization FROM doctors INNER JOIN specialization ON specialization.id = doctors.specialization", function (err, result) {
         if (err) throw err;
         else {
             res.render('alldoctors', { doctors: result });

@@ -1,2 +1,172 @@
 <%- include("../partials/header")%>
-<%- include("../partials/footer")%>
+<div class="container">
+    <h1>My appointments</h1>
+    <div class="row">
+        <div class="col-4">
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="/patients/patient/appointments"></a>
+                <a class="nav-link" href="/patients/patient/newappointment">New Appointment</a>
+            </nav>
+        </div>
+        <div class="col-6">
+            <form action="/patients/patient/appointments/<%=patient%>/new" method="POST">
+                <label for="cl">Choose a Clinic:</label>
+                <select name="clinic" id="cl">
+                    <option> </option>
+                    <%clinics.forEach(function(clinic){%>
+                    <option value="<%=clinic.id%>"><%=clinic.name%></option>
+                    <%})%>
+                </select>
+                </select>
+                <label for="spec">Choose a specializations:</label>
+                <select name="specialization" id="spec" disabled>
+                    <option> </option>
+                    <%specializations.forEach(function(specialization){%>
+                    <option value="<%=specialization.id%>"><%=specialization.specialization%></option>
+                    <%})%>
+                </select>
+                <label for="doc">Choose a doctor:</label>
+                <select name="doctor" id="doc" disabled>
+                    <option> </option>
+                </select>
+                <div id='calendar'></div>
+                <input class="inline" type="datetime" id="start" name="start" hidden value="">
+                <input class="inline" type="datetime" id="end" name="end" hidden value="">
+                <button class="btn btn-primary" id="addnew">Add new appointment</button>
+            </form>
+            <div id="booldate">
+                <label for="date">Chosen Date:</label>
+                <input type="date" id="date" name="date" readonly value="">
+                <label for="time">Chosen Hour:</label>
+                <input class="inline" type="time" id="time" name="time" readonly value="">
+                <input class="inline" type="time" id="time1" name="time1" readonly value="">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+
+    $(document).ready(function () {
+        $("#booldate").hide();
+        $("#addnew").hide();
+        $('#cl').change(function () {
+            $("#spec").prop("disabled", false);
+
+        });
+    });
+    $(document).ready(function () {
+        $('#spec').change(function () {
+            $("#doc").prop("disabled", false);
+            var clinicId = $('#cl').val()
+            var specId = $('#spec').val();
+            $.ajax({
+                type: 'GET',
+                url: '/patients/patient/test?clinicId=' + clinicId + '&specId=' + specId,
+                dataType: 'json',
+                success: function (data) {
+                    $('#doc').empty();
+                    $('#doc').append('<option></option>')
+                    data.forEach(function (dat) {
+                        dat.find(TextRow => {
+                            $('#doc').append("<option value = '" + TextRow.id + "'>" + TextRow.name + " " + TextRow.surname + "</option>")
+                        });
+                    });
+                }
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        $('#doc').change(function () {
+            var calendarEl = document.getElementById('calendar');
+            var clinicId = $('#cl').val();
+            var docId = $('#doc').val();
+            var open = 0;
+            var end = 0;
+            var events1 = 0;
+            $("#date").show();
+            $.ajax({
+                type: "GET",
+                url: '/patients/patient/event?docId=' + docId + '&clinId=' + clinicId,
+                datatype: "json",
+                async: false,
+                success: function (data) {
+                    open = data[0].starthour;
+                    end = data[0].endhour;
+                    events1 = data[1];
+                    // console.log(events1)
+                }
+            });
+            var i = 0;
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                slotDuration: "00:20:00",
+                slotLabelInterval: "00:20:00",
+                slotMinTime: open,
+                slotMaxTime: end,
+                weekends: false,
+                allDaySlot: false,
+                selectable: true,
+                defaultTimedEventDuration: "00:20:00",
+                eventColor: '#85D2d9',
+                events: events1,
+                
+                
+                select: function (info, jsEvent, view) {
+                    console.log(events1)
+                    var date = info.startStr.split("T");
+                    time = date[1].split("-");
+                    time = date[1].split("+");
+                    date2 = info.endStr.split("T");
+                    time1 = date2[1].split('-');
+                    time1 = date2[1].split('+');
+                    $("#date").val(date[0]);
+                    $("#time").val(time[0]);
+                    $("#time1").val(time1[0]);
+                    $("#start").val(date[0] + " " + time[0]);
+                    $("#end").val(date2[0] + " " + time1[0]);
+                    var events = calendar.getEvents();
+                    if (events[0]) {
+                        events[0].remove();
+                        calendar.addEvent({
+                            title: "chosen slot",
+                            start: info.startStr,
+                            end: info.endStr
+                        });
+                    } else {
+                        calendar.addEvent({
+                            title: "chosen slot",
+                            start: info.startStr,
+                            end: info.endStr
+                        });
+                    }
+                },
+                eventClick: function (info) {
+                    var events = calendar.getEvents();
+                    events[0].remove();
+                    $("#date").val("");
+                    $("#time").val("");
+                },
+                selectOverlap: false,
+
+            });
+
+            const slotLabelOption = {
+                hour: 'numeric',
+                minute: '2-digit',
+                omitZeroMinute: false,
+                meridiem: 'narrow',
+                hour12: false
+            };
+
+            calendar.setOption('slotLabelFormat', slotLabelOption);
+            calendar.render();
+            $("#booldate").show();
+            $("#addnew").show();
+        });
+
+    });
+
+
+</script>
+<% - include("../partials/footer") %>

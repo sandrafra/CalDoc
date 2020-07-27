@@ -1,0 +1,29 @@
+<%- include("../partials/header")%>
+
+<div class="container">
+    <div class="container">
+        <h1>Doctor</h1>
+        <p><%=name[0]%> <%=name[1]%> is avaliable on below Clinics: </p>
+    </div>
+    <div class="row text-center">
+        <% clinics.forEach(function(clinic){ %>
+        <% clinic.find(TextRow =>{ %>
+        <div class="col-md-3 col-sm-6">
+            <div class="thumbnail">
+                <h4><%= TextRow.name%></h4>
+                <div class="caption thumbnail">
+                    <h4>Adres</h3>
+                        <h6><%= TextRow.city%></h6>
+                        <h6><%= TextRow.zipcode%></h6>
+                        <h6><%= TextRow.street%></h6>
+                        <h6><%= TextRow.email%></h6>
+                        <h6><%= TextRow.phone%></h6>
+                </div>
+            </div>
+        </div>
+        <%}) %>
+        <%}) %>
+    </div>
+
+
+    <%- include("../partials/footer")%>
