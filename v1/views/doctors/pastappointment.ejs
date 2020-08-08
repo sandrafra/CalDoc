@@ -1,0 +1,51 @@
+<%-include("../partials/header")%>
+<div class="container">
+    <h1> Edit Appointment</h1>
+    <h3><strong>Patient: </strong> <%=appointment[0].name%> <%=appointment[0].surname%></h3>
+    <h5><strong>Date and Time of the appointment:</strong></h5>
+    <h5> <%=appointment[0].startslot%> <%=appointment[0].surname%></h5>
+
+    <form action="/doctors/doctor/appointment/edit/<%=appointment[0].idE%>" method="POST">
+        <div class="row">
+            <div class="col-6">
+                <div class="thumbnail ">
+                    <%if(medicaments.length>0){%>
+                        <%medicaments.forEach(function(med){%>
+                            <input type="text" value="<%=med.name%>" readonly>
+                            <input type="text" id="ean" value="<%=med.EAN%>" readonly>
+                            <input type="text" id="package" value="<%=med.package%>" readonly>
+                            <label class="inline">Dosage: </label>
+                            <input type="text" id="dosage" name="dosage" value="<%=med.dosage%>">
+                            <%})}else{%>
+                    <h1>No prescribed medicatons</h1>
+                    <%}%>
+              
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="thumbnail">
+                    <%if(examinations.length >0){%>
+                        <%examinations.forEach(function(exam){%>
+                            <input type="text" value="<%=exam.name%>" readonly>
+                            <label id="examinfo">Addicional examination information: </label>
+                            <input type="text" id="examinfo" value="<%=exam.info%>">
+                            <%})%>
+                            <%} else{%>
+                    <h1>No prescribed examinations</h1>
+                    <%}%>
+              
+
+                </div>
+            </div>
+            <div class="col-12 align-center">
+                <label name="diagnose">Diagnose: </label>
+                <%if(diagnose.length>0){%>
+                <textarea type="text" name="diagnose" id="diagnose"><%=diagnose[0].diagnose%></textarea>
+                <%} else{%>
+                <textarea type="text" name="diagnose" id="diagnose" placeholder="No diagnoses"></textarea>
+                <%}%>
+        </div>
+    </div>
+    <button class="btn btn-primary">Edit</button>
+</form>
+</div>

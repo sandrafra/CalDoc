@@ -1,15 +1,19 @@
 <%- include("../partials/header")%>
 <div class="container">
-    <h1>My appointments</h1>
+    <h1>
+        Create new appointment
+    </h1>
     <div class="row">
         <div class="col-4">
             <nav class="nav flex-column">
-                <a class="nav-link active" href="/patients/patient/appointments"></a>
-                <a class="nav-link" href="/patients/patient/newappointment">New Appointment</a>
+                <a class="nav-link " href="/patients/patient/appointment">My Calendar</a>
+                <a class="nav-link active" href="/patients/patient/appointment/<%=patient%>/new"">New Appointment</a>
+                <a class="nav-link" href="/patients/patient/appointment/<%=patient%>/past"">Past Appointment</a>
+                <a class="nav-link" href="/patients/patient/appointment/<%=patient%>/next">Next Appointment</a>
             </nav>
         </div>
         <div class="col-6">
-            <form action="/patients/patient/appointments/<%=patient%>/new" method="POST">
+            <form action="/patients/patient/appointment/<%=patient%>/new" method="POST">
                 <label for="cl">Choose a Clinic:</label>
                 <select name="clinic" id="cl">
                     <option> </option>
@@ -83,7 +87,8 @@
             var docId = $('#doc').val();
             var open = 0;
             var end = 0;
-            var events1 = 0;
+            var events1 = [];
+            var numberofevents = 0;
             $("#date").show();
             $.ajax({
                 type: "GET",
@@ -93,8 +98,19 @@
                 success: function (data) {
                     open = data[0].starthour;
                     end = data[0].endhour;
-                    events1 = data[1];
-                    // console.log(events1)
+                    get = data[1]
+                    numberofevents = data[1].length;
+                    for(i = 0; i<numberofevents; i++){
+                    events1.push(
+                        {
+                            title: "blocked",
+                            start: get[i].startslot,
+                            end: get[i].endslot,
+                            color: "red"
+                        }
+                    )
+                    
+                    }
                 }
             });
             var i = 0;
@@ -110,10 +126,7 @@
                 defaultTimedEventDuration: "00:20:00",
                 eventColor: '#85D2d9',
                 events: events1,
-                
-                
                 select: function (info, jsEvent, view) {
-                    console.log(events1)
                     var date = info.startStr.split("T");
                     time = date[1].split("-");
                     time = date[1].split("+");
@@ -126,8 +139,9 @@
                     $("#start").val(date[0] + " " + time[0]);
                     $("#end").val(date2[0] + " " + time1[0]);
                     var events = calendar.getEvents();
-                    if (events[0]) {
-                        events[0].remove();
+                    if (events.length > numberofevents) {
+                        console.log(events)
+                        events[events.length-1].remove();
                         calendar.addEvent({
                             title: "chosen slot",
                             start: info.startStr,
@@ -143,7 +157,9 @@
                 },
                 eventClick: function (info) {
                     var events = calendar.getEvents();
-                    events[0].remove();
+                    if (events.length > numberofevents) {
+                    events[events.length-1].remove();
+                    }
                     $("#date").val("");
                     $("#time").val("");
                 },

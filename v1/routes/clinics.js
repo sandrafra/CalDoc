@@ -42,34 +42,6 @@ router.post("/register", function (req, res) {
     });
 });
 
-router.post("/:idC/doctors", function (req, res) {
-
-    con.query("SELECT IdD FROM docclin WHERE IdC= ?", req.params.idC, async function (err, results) {
-        if (err) throw err;
-        else {
-            if (results.length > 0) {
-                var doctors = [];
-                var name = [];
-                for (var i = 0; i < results.length; i++) {
-                    var answer;
-                    answer = "SELECT doctors.id, doctors.name, doctors.surname, doctors.email, specialization.specialization FROM doctors INNER JOIN specialization ON specialization.id = doctors.id and doctors.id = '" + results[i].IdD + "'";
-                    var rows = await con.promise().query(answer);
-                    if (rows.length > 0) {
-                        doctors.push(rows[0]);
-                }
-                con.query("SELECT name FROM clinics WHERE id = ?", req.params.idC, function(err,names){
-                    if (err) throw err;
-                    else{
-                         name = names[0].name;
-                    }
-                })
-            }
-        }
-            res.render("clinics/doctors", { doctors: doctors, name: name });
-        }
-    });
-});
-
 router.get('/', function (req, res) {
     con.query("SELECT id, name, email, phone, city, zipcode, street, openhour, endhour FROM clinics WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
@@ -158,5 +130,26 @@ router.post("/:id/delete", function (req, res) {
     });
 });
 
+router.get('/:id/calendar', function (req, res) {
+    con.query("SELECT event.id, clinics.name as clinic, event.startslot, event.endslot, event.idDC, patients.name, patients.surname, clinics.openhour, clinics.endhour, doctors.id as docid, doctors.name as docname, doctors.surname as docsurname FROM ((((event INNER JOIN clinics ON clinics.id = ?)INNER JOIN docclin ON docclin.IdC = clinics.id and event.idDC = docclin.id) INNER JOIN patients ON patients.id = event.idP) inner join doctors on doctors.id = docclin.IdD)", res.locals.currentUserID, function (err, results) {
+        if (err) {
+            throw err;
+        }
+        else {
+            res.render("clinics/calendar", { clinevents: results })
+        }
+    })
+});
+
+router.get('/:id/doctors', function(req,res){
+    con.query("SELECT doctors.* FROM doctors INNER JOIN docclin ON docclin.IdC = ? and docclin.IdD = doctors.id", req.params.id, function(err,results){
+        if (err) {
+            throw err;
+        }
+        else {
+            res.render("clinics/doctors", {doctors: results})
+        }
+    })
+})
 
 module.exports = router;

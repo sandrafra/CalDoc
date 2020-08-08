@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/stylesheets/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;800&display=swap" rel="stylesheet">
     <link href=https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.1.0/main.min.css,npm/fullcalendar@5.1.0/main.min.css rel="stylesheet">
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"></script>
     <script src=https://cdn.jsdelivr.net/combine/npm/fullcalendar@5.1.0/main.min.js,npm/fullcalendar@5.1.0/locales-all.min.js,npm/fullcalendar@5.1.0/locales-all.min.js,npm/fullcalendar@5.1.0></script>
     <title>DocCal</title>
 </head>
@@ -41,24 +42,24 @@
             </li>
             <%if(type === "doctor"){%>
             <li class="nav-item">
-              <a class="nav-link hvr-grow" href="./doctors/doctor">Profile  <span class="sr-only">(current)</span></a>
+              <a class="nav-link hvr-grow" href="/doctors/doctor">Profile  <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link hvr-grow" href="./doctor/clinics">My Clinics  <span class="sr-only">(current)</span></a>
+              <a class="nav-link hvr-grow" href="/doctor/clinics">My Clinics  <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link hvr-grow" href="./doctor/patients">My Patients  <span class="sr-only">(current)</span></a>
+              <a class="nav-link hvr-grow" href="/doctor/patients">My Patients  <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link hvr-grow" href="./doctor/calendar">Calendar  <span class="sr-only">(current)</span></a>
+              <a class="nav-link hvr-grow" href="doctors/doctor/<%=currentUserID%>/calendar">Calendar  <span class="sr-only">(current)</span></a>
             </li>
             <% } else if(type === "patient"){%>
               
               <li class="nav-item">
-                <a class="nav-link hvr-grow" href="./patients/patient">Profil <span class="sr-only">(current)</span></a>
+                <a class="nav-link hvr-grow" href="/patients/patient">Profil <span class="sr-only">(current)</span></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link hvr-grow" href="./patients/patient/appointments/<%=currentUserID%>">Appointments  <span class="sr-only">(current)</span></a>
+                <a class="nav-link hvr-grow" href="/patients/patient/appointment">Appointments  <span class="sr-only">(current)</span></a>
               </li>
               <li class="nav-item">
                 <a class="nav-link hvr-grow" href="/patient/medications">Medications  <span class="sr-only">(current)</span></a>
@@ -68,16 +69,16 @@
               </li>
               <% } else if(type === "clinic"){%>
                 <li class="nav-item">
-                  <a class="nav-link hvr-grow" href="./clinics/clinic">Profile  <span class="sr-only">(current)</span></a>
+                  <a class="nav-link hvr-grow" href="/clinics/clinic">Profile  <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link hvr-grow" href="/clinic/:id/doctor"> My Doctors  <span class="sr-only">(current)</span></a>
+                  <a class="nav-link hvr-grow" href="/clinics/clinic/<%=currentUserID%>/doctors"> Doctors  <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link hvr-grow" href="/clinic/:id/patient">My Patients  <span class="sr-only">(current)</span></a>
+                  <a class="nav-link hvr-grow" href="/clinic/<%=currentUserID%>/patient">My Patients  <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link hvr-grow" href="/clinic/:id/calendar">My Calendar <span class="sr-only">(current)</span></a>
+                  <a class="nav-link hvr-grow" href="clinics/clinic/<%=currentUserID%>/calendar">My Calendar <span class="sr-only">(current)</span></a>
                 </li>
               <%} else {%>
               <li class="nav-item">

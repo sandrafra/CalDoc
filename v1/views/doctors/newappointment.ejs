@@ -1,0 +1,83 @@
+<%- include("../partials/header")%>
+<div class="container">
+    <h1> Appointment</h1>
+    <h3>Patient - <%=appointment[0].name%> <%-appointment[0].surname%></h3>
+    
+        <form action="/doctors/doctor/appointment/new/<%=appointment[0].idE%>" method="POST">
+            <div class="row">
+            <div class="col-6">
+                <div class="thumbnail">
+                <select name="medicaments" id="med">
+                    <%medicaments.forEach(function(med){%>
+                    <option value="<%=med.id%>,<%=med.name%>" selected><%=med.name%></option>
+                    <%})%>
+                </select>
+                <input type="text" id="ean" value="" readonly>
+                <input type="text" id="package" value="" readonly>
+                <label  class="inline">Dosage: </label>
+                <input type="text" id="dosage" name="dosage" value="">
+                <div type="button" id="addmed" class="btn btn-primary btn-large">Add medicament </div>
+                <ul name='medlist' id="medlist"></ul>
+            </div>
+            </div>
+            <div class="col-6">
+                <div class="thumbnail">
+                <select name="examinations" id="exam">
+                    <%examinations.forEach(function(exam){%>
+                    <option value="<%=exam.id%>,<%=exam.name%>" selected><%=exam.name%></option>
+                    <%})%>
+                </select>
+                
+                <label id="examinfo">Addicional examination information: </label>
+                <input type="text" id="examinfo">
+                <div type="button" id="addexam" class="btn btn-primary btn-large">Add medical examinations </div>
+                <ul name="examlist" id="examlist"></ul>
+            </div>
+        </div>
+        <div class="col-12 align-center">
+            <label name="diagnose">Diagnose: </label>
+            <textarea type="text" name="diagnose" id="diagnose"></textarea>
+        </div>
+        </div>
+        <button class="btn btn-primary">Submit</button>
+        </form>
+    
+
+    <script>
+        $(document).ready(function () {
+            $("#ean").hide();
+            $("#package").hide();
+        });
+
+        $("#med").change(function () {
+            var medvalue = $("#med").val();
+            var idmed = medvalue.split(",")[0];
+            var namemed = medvalue.split(',')[1];
+            console.log(idmed);
+            console.log(namemed)
+            "<%medicaments.forEach(function(med){%>"
+            if (idmed == <%-med.id%>) {
+                $("#ean").show();
+                $("#package").show();
+                $("#ean").val(<%-med.EAN%>);
+                $("#package").val("<%-med.package%>")
+            }
+            "<%})%>"
+        });
+        $("#addmed").click(function () {
+            var medvalue = $("#med").val();
+            var idmed = medvalue.split(",")[0];
+            var namemed = medvalue.split(",")[1];
+            $('#medlist').append('<li>' + namemed + " " + $("#ean").val() + " " + $("#package").val() + " " + $("#dosage").val() + '<input type="hidden" name="medlist[]" value="' + idmed + "," + $("#dosage").val()+ '"></li>')
+            $("#dosage").val("")
+        })
+        $("#addexam").click(function () {
+            var examvalue = $("#exam").val();
+            var idexam = examvalue.split(",")[0];
+            var nameexam = examvalue.split(",")[1];
+            $('#examlist').append('<li>' + nameexam +"<br> Addicional information: " + $("#examinfo").val() + '<input type="hidden" name="examlist[]" value="' + idexam +","+ $("#examinfo").val() + '"></li>')
+            $('#examinfo').val("");
+        })
+
+
+    </script>

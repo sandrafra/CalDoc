@@ -1,0 +1,31 @@
+<%- include("../partials/header")%>
+<div class="container">
+    <h1>
+        
+    </h1>
+    <div class="row">
+        <div class="col-2">
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="/patients/patient/appointment">My calendar</a>
+                <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/new"">New Appointment</a>
+                <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/past"">Past Appointment</a>
+                <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/next"">Next Appointment</a>
+             </nav>
+        </div>
+        <div class="col-10">
+            <%pastevents.forEach(function(event){%>
+                <div class="col-10">
+                    <div class="thumbnail">
+                        <h6>Clinic: <%=event.clinname%></h6>
+                        <h6>Adress <%=event.city%></h6>
+                        <h6><%=event.street%></h6>
+                        <h6>Doctor: <%=event.docname%> <%=event.surname%></h6>
+                        <h6>Specizalization: <%=event.specialization%></h6>
+                        <h6>Date: <%=event.startslot%></h6>
+                        <a class="btn btn-primary">See more information</a>
+                    </div>
+                </div>
+        <%})%>
+        </div>
+    </div>
+</div>

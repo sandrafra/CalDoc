@@ -88,7 +88,7 @@ a {
 #appointment{
 	background-color: rgba(75, 199, 212, 0.5);
 }
-#calendar{
+#calendarr{
 	background-color: rgb(243, 191, 196);
 }
 #medications{
@@ -127,8 +127,37 @@ a:hover {
 	border: 2px solid rgb(65, 136, 177);
 	padding: 10%;
 	margin: 5px;
+	width: 100%;
+	size: 100%;
   }
   .thumbnail .caption {
 	border: 1px, solid grey;
 	margin-bottom: 2px;
   }
+
+ #info {
+	 width: 500px;
+	 margin: auto;
+ }
+
+ #calendar{
+	 margin: auto;
+	 padding: 10px;
+	 background-color: rgb(235, 152, 161);
+	 border: 2px solid b
+ }
+
+ select {
+	width: 300px;
+  }
+  
+  option {
+	width: 300px;
+  }
+ #dosage{
+	 display: inline
+ }
+#diagnose{
+	width: 400px;
+	height: 300px;
+}

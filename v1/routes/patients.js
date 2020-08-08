@@ -126,16 +126,26 @@ router.post("/:id/delete", function(req,res){
         }
     });
 });
+router.get("/appointment" , function(req,res){
+    con.query("SELECT * FROM event WHERE idP = ?", res.locals.currentUserID, function(err, results){
+        if(err){
+            throw err;
+        } 
+        else{
 
-router.get("/appointments/:id", async function(req,res){
+        res.render("patients/appointment", {patevents: results})
+        }
+    })
+})
+router.get("/appointment/:id/new", async function(req,res){
     var clinics, specializations, docclin;
      clinics = await con.promise().query("SELECT * FROM clinics")
      specializations = await con.promise().query("SELECT * FROM specialization")
      docclin = await con.promise().query("SELECT * from docclin");
-    res.render("patients/appointments", {clinics: clinics[0], specializations: specializations[0], docclins: docclin[0], patient: req.params.id});
+    res.render("patients/newappointment", {clinics: clinics[0], specializations: specializations[0], docclins: docclin[0], patient: req.params.id});
 });
 
-router.post("/appointments/:id/new", function(req,res){
+router.post("/appointment/:id/new", function(req,res){
     con.query("SELECT id FROM docclin WHERE IdC = '" + req.body.clinic + "' AND IdD = '"+ req.body.doctor+"'", function(err, result){
         var newevent= [req.params.id, result[0].id, req.body.date, req.body.start, req.body.end];
         con.query("INSERT INTO event (idP, idDC,date, startslot, endslot) values (?,?,?,?,?)", newevent, function(err){
@@ -147,7 +157,52 @@ router.post("/appointments/:id/new", function(req,res){
 
         })
     });
+});
+router.get("/appointment/:id/past", function(req,res){
+    con.query("SELECT event.id,event.startslot, event.endslot,  doctors.name as docname, doctors.surname, specialization.specialization, clinics.name as clinname, clinics.city, clinics.street FROM ((((event INNER JOIN docclin ON event.idP = ? and docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = docclin.IdD) INNER JOIN specialization ON doctors.specialization = specialization.id) INNER JOIN clinics ON docclin.IdC = clinics.id)", res.locals.currentUserID, function(err, results){
+        if(err){
+            throw err;
+        } 
+        else{
+            var date = new Date();
+            var pastevents = []
+            results.forEach(function(result){
+                if(result.startslot < date){
+                    pastevents.push(result)
+                }
+            })
+            console.log(pastevents)
+        res.render("patients/pastappointment", {pastevents: pastevents})
+        }
+    })
 })
+router.get("/appointment/:id/next", function(req,res){
+    con.query("SELECT event.id, event.startslot, event.endslot,  doctors.name as docname, doctors.surname, specialization.specialization, clinics.name as clinname, clinics.city, clinics.street FROM ((((event INNER JOIN docclin ON event.idP = ? and docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = docclin.IdD) INNER JOIN specialization ON doctors.specialization = specialization.id) INNER JOIN clinics ON docclin.IdC = clinics.id)", res.locals.currentUserID, function(err, results){
+        if(err){
+            throw err;
+        } 
+        else{
+            var date = new Date();
+            var nextevents = []
+            results.forEach(function(result){
+                if(result.startslot > date){
+                    nextevents.push(result)
+                }
+            })
+            console.log(nextevents.length)
+        res.render("patients/nextappointment", {nextevents: nextevents})
+        }
+    });
+});
+
+router.get("/appointment/:eventid/delete", function(req,res){
+    con.query("DELETE FROM event WHERE id =? ", req.params.eventid, function(err){
+        if (err) throw err;
+        else{
+            res.redirect("back")
+        }
+    })
+});
 
 //dynamic dropdown
 router.get("/test",function(req,res){
@@ -167,7 +222,7 @@ router.get("/event", function(req,res){
     con.query("SELECT id, starthour, endhour FROM docclin WHERE IdC = '"+req.query.clinId+ "' AND IdD = '" +req.query.docId+"'", function(err,result){
             con.query("SELECT * FROM event WHERE idDC = '" + result[0].id+ "'", function(err, events){
                 console.log(events)
-                results = [result[0], events[0]]
+                results = [result[0], events]
                 res.send(results);
             });
         });   

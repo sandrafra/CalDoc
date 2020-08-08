@@ -1,0 +1,88 @@
+<%- include("../partials/header")%>
+<div class="container">
+    <h1>
+        My Calendar:
+    </h1>
+    <div class="row">
+        <div class=" col-12">
+            <div id='calendar'></div>
+        </div>
+    </div>
+            
+    <div class="col-12">
+        <h4> Click on the event and see detiled information</h4>
+        <p id="info"></p>
+    </div>
+</div>
+<script>
+    var events1 = [];
+    var today = JSON.stringify(moment())
+    today = JSON.parse(today)
+
+    "<%clinevents.forEach(function(event){%>"
+    var start =<%-JSON.stringify(event.startslot) %>;
+    if (today < start) {
+        var newevent = {
+            id: <%- JSON.stringify(event.id) %>,
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: <%-JSON.stringify(event.docname) %> + " " + <%-JSON.stringify(event.docsurname)%> +" "+ <%-JSON.stringify(event.docid)%> +" " +<%-JSON.stringify(event.name) %> + " " + <%-JSON.stringify(event.surname) %>,
+            color: "green"
+        };
+    } else {
+        var newevent = {
+            id: <%- JSON.stringify(event.id) %>,
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: <%-JSON.stringify(event.docname) %> + " " + <%-JSON.stringify(event.docsurname)%> +" "+ <%-JSON.stringify(event.docid)%> +" " +<%-JSON.stringify(event.name) %> + " " + <%-JSON.stringify(event.surname) %>,
+            color: "red"
+        };
+    }
+
+    events1.push(newevent)
+
+    "<%})%>"
+    $(document).ready(function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            height: 500,
+            themeSystem: 'bootstrap',
+            expandRows: true,
+            slotDuration: "00:20:00",
+            slotLabelInterval: "00:20:00",
+            slotMinTime: <%- JSON.stringify(clinevents[0].openhour) %>,
+            slotMaxTime: <%- JSON.stringify(clinevents[0].endhour) %>,
+            weekends: false,
+            allDaySlot: false,
+            selectable: true,
+            defaultTimedEventDuration: "00:20:00",
+            eventColor: '#85D2d9',
+            selectOverlap: false,
+            events: events1,
+            eventClick: function(calEvent, jsEvent, view)  {
+                console.log(calEvent)
+                var start = JSON.stringify(calEvent.event._instance.range.start)
+                if(today > JSON.parse(start)){
+                    console.log(calEvent)
+                var title = calEvent.event._def.title.split(" ");
+                $("#info").html("<div class='thumbnail'><p> <strong>Doctor:</strong> "+ title[0]+" "+ title[1]+ "  <a class='btn btn-sm btn-primary' href='/doctors/doctor/"+ title[2]+ "/calendar'>See calendar</a>" +"</p>"+ "<p> <strong>Patient:</strong> "+ title[3] + " " + title[4] + "<p> <strong>Date:</strong> " + calEvent.event._instance.range.start +"</p> </div>")
+                } else {
+                var title = calEvent.event._def.title.split(" ");
+                console.log(calEvent.event._def.publicId)
+                $("#info").html("<div class='thumbnail'><p> <strong>Doctor:</strong> "+ title[0]+" "+ title[1]+ "  <a class='btn btn-sm btn-primary' href='/doctors/doctor/"+ title[2]+ "/calendar'>See calendar</a>" +"</p>"+ "<p> <strong>Patient:</strong> "+ title[2] + " " + title[3] + "<p> <strong>Date:</strong> " + calEvent.event._instance.range.start +"</p></div>")
+                }
+            },
+        });
+        const slotLabelOption = {
+            hour: 'numeric',
+            minute: '2-digit',
+            omitZeroMinute: false,
+            meridiem: 'narrow',
+            hour12: false
+        };
+        calendar.setOption('slotLabelFormat', slotLabelOption);
+        calendar.render();
+    });
+
+</script>

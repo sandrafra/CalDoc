@@ -254,4 +254,60 @@ router.get("/alldoctors", function (req, res) {
         }
     })
 });
+
+router.post("/:idD/clinics", function (req, res) {
+    console.log(req.params.idD)
+    con.query("SELECT IdC FROM docclin WHERE IdD = ?", req.params.idD, async function (err, results) {
+        if (err) throw err;
+        else {
+            if (results.length > 0) {
+                var clinics = [];
+                var name = [];
+                for (var i = 0; i < results.length; i++) {
+                    var answer;
+                    answer = "SELECT * FROM clinics WHERE id = '" + results[i].IdC + "'";
+                    var rows = await con.promise().query(answer);
+                    if (rows.length > 0) {
+                        clinics.push(rows[0]);
+                    }
+                    con.query("SELECT name, surname FROM doctors WHERE id = ?", req.params.idD, function (err, names) {
+                        if (err) throw err;
+                        else {
+                            name = [names[0].name, names[0].surname];
+                        }
+                    })
+
+                }
+            }
+            res.render("clinics", { clinics: clinics, name: name });
+        }
+    });
+});
+router.post("/:idC/doctors", function (req, res) {
+
+    con.query("SELECT IdD FROM docclin WHERE IdC= ?", req.params.idC, async function (err, results) {
+        if (err) throw err;
+        else {
+            if (results.length > 0) {
+                var doctors = [];
+                var name = [];
+                for (var i = 0; i < results.length; i++) {
+                    var answer;
+                    answer = "SELECT doctors.id, doctors.name, doctors.surname, doctors.email, specialization.specialization FROM doctors INNER JOIN specialization ON specialization.id = doctors.id and doctors.id = '" + results[i].IdD + "'";
+                    var rows = await con.promise().query(answer);
+                    if (rows.length > 0) {
+                        doctors.push(rows[0]);
+                }
+                con.query("SELECT name FROM clinics WHERE id = ?", req.params.idC, function(err,names){
+                    if (err) throw err;
+                    else{
+                         name = names[0].name;
+                    }
+                })
+            }
+        }
+            res.render("doctors", { doctors: doctors, name: name });
+        }
+    });
+});
 module.exports = router;

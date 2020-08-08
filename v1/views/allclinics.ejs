@@ -18,7 +18,7 @@
                         <h6><%= clinic.email%></h6>
                         <h6><%= clinic.phone%></h6>
                 </div>
-                <form action="/clinics/clinic/<%=clinic.id%>/doctors" method="POST">
+                <form action="/<%=clinic.id%>/doctors" method="POST">
                     <button type="submit" class="btn btn-primary">See doctors</button>
                     </form>
             </div>

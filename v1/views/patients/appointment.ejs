@@ -1,0 +1,78 @@
+<%- include("../partials/header")%>
+<div class="container">
+    <h1>
+        My Calendar:
+    </h1>
+    <div class="row">
+        <div class="col-2">
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="/patients/patient/appointment">My calendar</a>
+                <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/new"">New Appointment</a>
+                <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/past"">Past Appointment</a>
+                <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/next"">Next Appointment</a>
+             </nav>
+        </div>
+        <div class=" col-10">
+                    <div id='calendar'></div>
+        </div>
+
+    </div>
+</div>
+<script>
+    var events1 = [];
+    var today = JSON.stringify(moment())
+    today = JSON.parse(today)
+
+    "<%patevents.forEach(function(event){%>"
+    var start =<%-JSON.stringify(event.startslot) %>;
+    if (today < start) {
+        var newevent = {
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: "Appointment ",
+            color: "green"
+        };
+    } else {
+        var newevent = {
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: "Appointment ",
+            color: "red"
+        };
+    }
+
+    events1.push(newevent)
+
+    "<%})%>"
+    $(document).ready(function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            slotDuration: "00:20:00",
+            slotLabelInterval: "00:20:00",
+            slotMinTime: "6:00:00",
+            slotMaxTime: "21:00:00",
+            weekends: false,
+            allDaySlot: false,
+            selectable: true,
+            defaultTimedEventDuration: "00:20:00",
+            eventColor: '#85D2d9',
+            selectOverlap: false,
+            events: events1,
+            eventClick: function (info) {
+
+                console.log(info.event)
+            },
+        });
+        const slotLabelOption = {
+            hour: 'numeric',
+            minute: '2-digit',
+            omitZeroMinute: false,
+            meridiem: 'narrow',
+            hour12: false
+        };
+        calendar.setOption('slotLabelFormat', slotLabelOption);
+        calendar.render();
+    });
+
+</script>
