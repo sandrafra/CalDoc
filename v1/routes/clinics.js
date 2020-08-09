@@ -142,7 +142,7 @@ router.get('/:id/calendar', function (req, res) {
 });
 
 router.get('/:id/doctors', function(req,res){
-    con.query("SELECT doctors.* FROM doctors INNER JOIN docclin ON docclin.IdC = ? and docclin.IdD = doctors.id", req.params.id, function(err,results){
+    con.query("SELECT doctors.name, doctors.surname, doctors.email, docclin.starthour, docclin.endhour, specialization.specialization FROM ((doctors INNER JOIN docclin ON docclin.IdC = ? and docclin.IdD = doctors.id) INNER JOIN specialization ON specialization.id = doctors.specialization)", req.params.id, function(err,results){
         if (err) {
             throw err;
         }

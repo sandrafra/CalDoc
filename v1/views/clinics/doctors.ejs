@@ -3,24 +3,30 @@
 <div class="container">
     <div class="container">
         <h1>Doctors</h1>
-        <p>View doctors avaliable on <%=name[0]%></p>
+        <a class="btn btn-primary" id="adddoc">Add new doctor</a>
+        <div id="divnewdoc"></div>
     </div>
-    <div class="row text-center">
+    <div class="row text-center justify-content-center">
     <% doctors.forEach(function(doctor){ %>
-        <% doctor.find(TextRow =>{ %>
-        <div class="col-md-3 col-sm-6">
+        <div class="col-10 ">
             <div class="thumbnail">
-                <h3><%= TextRow.name%></h4><h4><%= TextRow.surname%></h4>
+                <h3><%= doctor.name%></h4><h4><%= doctor.surname%></h4>
                 <div class="caption">
                     <h4>Adres</h4>
-                    <h6><%= TextRow.specialization%></h6>
-                    <h6><%= TextRow.email%></h6>
+                    <h6><%= doctor.specialization%></h6>
+                    <h6><h4>E-mail:</h4> <%= doctor.email%></h6>
+                    <h6>Working hours in the clinic</h6>
+                    <h4><%= doctor.starthour%> to <%= doctor.endhour%></h4>
             </div>
         </div>
 
 </div>
-<%})%>
 <%}) %>
 </div>
+<script>
+    $("#adddoc").click(function(){
 
+        $("#divnewdoc").append("<div class='col-10'>tak</div>");
+    });
+</script>
 <%- include("../partials/footer")%>
