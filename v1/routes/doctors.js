@@ -57,13 +57,12 @@ router.get('/', function (req, res) {
 });
 
 router.get('/:id/calendar', function (req, res) {
-    con.query("SELECT event.id, clinics.name as clinic, event.startslot, event.endslot, event.idDC, docclin.starthour, docclin.endhour, patients.name, patients.surname   FROM ((((event INNER JOIN docclin ON docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = ? and docclin.IdD = doctors.id) INNER JOIN clinics ON docclin.IdC = clinics.id) INNER JOIN patients ON patients.id = event.idP)", req.params.id, function (err, results) {
+    con.query("SELECT event.id, clinics.name as clinic, event.startslot, event.endslot, event.idDC, docclin.starthour, docclin.endhour, patients.name, patients.surname FROM ((((event INNER JOIN docclin ON docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = ? and docclin.IdD = doctors.id) INNER JOIN clinics ON docclin.IdC = clinics.id) INNER JOIN patients ON patients.id = event.idP)", req.params.id, function (err, results) {
         if (err) {
             throw err;
         }
         else {
-            console.log(results)
-            res.render("doctors/calendar", { docevents: results })
+                res.render("doctors/calendar", { docevents: results });
         }
     })
 });

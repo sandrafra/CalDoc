@@ -21,6 +21,14 @@
 
     "<%clinevents.forEach(function(event){%>"
     var start =<%-JSON.stringify(event.startslot) %>;
+    if (<%- JSON.stringify(event.type) %> == "vacation"){
+        var newevent = {
+            id: <%- JSON.stringify(event.id) %>,
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: "Vacation",
+        };
+    } else{
     if (today < start) {
         var newevent = {
             id: <%- JSON.stringify(event.id) %>,
@@ -38,6 +46,7 @@
             color: "red"
         };
     }
+}
 
     events1.push(newevent)
 

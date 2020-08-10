@@ -1,32 +1,55 @@
 <%- include("../partials/header")%>
 
 <div class="container">
-    <div class="container">
-        <h1>Doctors</h1>
-        <a class="btn btn-primary" id="adddoc">Add new doctor</a>
-        <div id="divnewdoc"></div>
-    </div>
-    <div class="row text-center justify-content-center">
-    <% doctors.forEach(function(doctor){ %>
-        <div class="col-10 ">
-            <div class="thumbnail">
-                <h3><%= doctor.name%></h4><h4><%= doctor.surname%></h4>
-                <div class="caption">
-                    <h4>Adres</h4>
-                    <h6><%= doctor.specialization%></h6>
-                    <h6><h4>E-mail:</h4> <%= doctor.email%></h6>
-                    <h6>Working hours in the clinic</h6>
-                    <h4><%= doctor.starthour%> to <%= doctor.endhour%></h4>
-            </div>
+    <h1>Doctors</h1>
+    <div class="row text-center">
+        <div class="col-3">
+            <nav class="nav flex-column">
+                <a class="btn btn-primary mb-2 mt-2" href="/clinics/clinic/<%=currentUserID%>/doctors/new" id="newdoc">New doctor</a>
+            </nav>
         </div>
 
-</div>
-<%}) %>
-</div>
-<script>
-    $("#adddoc").click(function(){
-
-        $("#divnewdoc").append("<div class='col-10'>tak</div>");
-    });
-</script>
-<%- include("../partials/footer")%>
+        <% doctors.forEach(function(doctor){ %>
+        <div class="col-9 ml-auto">
+            <div class="thumbnail">
+                <p>Name and Surname: <strong><%= doctor.name%> <%= doctor.surname%></strong></p>
+                <h6>Specialization: <strong><%= doctor.specialization%></strong></h6>
+                <h6>
+                    E-mail: <strong><%= doctor.email%></strong>
+                </h6>
+                <form action="/clinics/clinic/<%=doctor.id%>/doctor/hours" method="POST" class="form-inline">
+                    <h6>Working hours in the clinic:
+                        <strong><%= doctor.starthour%> to <%= doctor.endhour%></strong></h6>
+                    <input class="block" type="time" name="starthour" value="<%= doctor.starthour%>"> -
+                    <input type="time" name="endhour" value="<%= doctor.endhour%>">
+                    <button class="btn btn-primary m-2 inline">Edit working hours</button>
+                </form>
+                <a class="btn btn-primary m-2" href="/clinics/clinic/<%=doctor.id%>/vacation">Add vacation leave</a>
+                <a data-toggle="modal" data-target="#myModal<%=doctor.id%>" class="btn btn-danger">Sign out the doctor from clinic</a>
+                <div id='myModal<%=doctor.id%>' class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Sign out the doctor</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Doctor <%=doctor.name%> <%=doctor.surname%> will be sign out from your clinic.<br>
+                                    Are you sure?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <form action="/clinics/clinic/<%=doctor.id%>/doctor/delete" method="POST">
+                                    <button class="btn btn-danger m-2" data>Yes</button>
+                                </form>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%})%>
+    </div>
+    <%- include("../partials/footer")%>

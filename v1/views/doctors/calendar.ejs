@@ -3,6 +3,7 @@
     <h1>
         My Calendar:
     </h1>
+    <h3 id="eventmess"></h3>
     <div class="row">
         <div class=" col-12">
             <div id='calendar'></div>
@@ -18,9 +19,19 @@
     var events1 = [];
     var today = JSON.stringify(moment())
     today = JSON.parse(today)
-
-    "<%docevents.forEach(function(event){%>"
+    var starthour = "08:00:00"
+    var endhour = "20:00:00"
+    "<%if(docevents.length > 0){%>"
+     "<%docevents.forEach(function(event){%>"
     var start =<%-JSON.stringify(event.startslot) %>;
+    if (<%- JSON.stringify(event.type) %> == "vacation"){
+        var newevent = {
+            id: <%- JSON.stringify(event.id) %>,
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: "Vacation",
+        };
+    } else{
     if (today < start) {
         var newevent = {
             id: <%- JSON.stringify(event.id) %>,
@@ -38,10 +49,14 @@
             color: "red"
         };
     }
-
+    }
     events1.push(newevent)
 
-    "<%})%>"
+    "<%});%>"
+"<%} else {%>"
+    $("#eventmess").text("You do have any events in you calendar");
+    "<%}%>"
+
     $(document).ready(function () {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -51,8 +66,8 @@
             expandRows: true,
             slotDuration: "00:20:00",
             slotLabelInterval: "00:20:00",
-            slotMinTime: <%- JSON.stringify(docevents[0].starthour) %>,
-            slotMaxTime: <%- JSON.stringify(docevents[0].endhour) %>,
+            slotMinTime: starthour,
+            slotMaxTime: endhour,
             weekends: false,
             allDaySlot: false,
             selectable: true,

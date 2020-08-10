@@ -1,0 +1,114 @@
+<%- include("../partials/header")%>
+
+<div class="container">
+    <h1>Doctors</h1>
+    <div class="row text-center">
+        <div class="col-3">
+            <nav class="nav flex-column">
+                <a class="btn btn-primary mb-2 mt-2" href="/clinics/clinic/<%=currentUserID%>/doctors">View all
+                    doctors</a>
+                <a class="btn btn-primary mb-2 mt-2" href="/clinics/clinic/<%=currentUserID%>/doctors/new"
+                    id="newdoc">New doctor</a>
+            </nav>
+        </div>
+        <div class="col-9">
+            <p>Pick vacation days on the calendar or type date into the inputs under calendar</p>
+            <div id='calendar' class="mb-3"></div>
+            <form action="/clinics/clinic/<%=doctor%>/vacation" method="POST">
+                <label for="vacationstart">Vacation days: </label>
+                <input type="datatime" name="vacationstart" id="vacationstart"> to
+                <input type="datatime" name="vacationend" id="vacationend">
+                <button class="btn btn-primary mt-2">Add vacation days</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var events1 = [];
+    var today = JSON.stringify(moment())
+    today = JSON.parse(today)
+    var vacation = [];
+    console.log(<%-JSON.stringify(events) %>)
+    "<%events.forEach(function(event){%>"
+    var start = <%-JSON.stringify(event.startslot) %>;
+    console.log(<%- JSON.stringify(event.type) %>)
+    if (<%- JSON.stringify(event.type) %> == "vacation"){
+        var newevent = {
+            id: <%- JSON.stringify(event.id) %>,
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: "Vacation",
+        };
+    } else{
+    if (today < start) {
+        var newevent = {
+            id: <%- JSON.stringify(event.id) %>,
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: <%-JSON.stringify(event.clinic) %> + " Patient: " + <%-JSON.stringify(event.name) %> + " " + <%-JSON.stringify(event.surname) %>,
+            color: "green"
+        };
+    } else {
+        var newevent = {
+            id: <%- JSON.stringify(event.id) %>,
+            end: <%- JSON.stringify(event.endslot) %>,
+            start: <%-JSON.stringify(event.startslot) %>,
+            title: <%-JSON.stringify(event.clinic) %> + " Patient: " + <%-JSON.stringify(event.name) %> + " " + <%-JSON.stringify(event.surname) %>,
+            color: "red"
+        };
+    }
+}
+
+    events1.push(newevent)
+
+    "<%})%>"
+    $(document).ready(function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            height: 400,
+            themeSystem: 'bootstrap',
+            expandRows: true,
+            slotDuration: "00:20:00",
+            slotLabelInterval: "00:20:00",
+            slotMinTime: <%- JSON.stringify(events[0].starthour) %>,
+            slotMaxTime: <%- JSON.stringify(events[0].endhour) %>,
+            weekends: false,
+            selectable: true,
+            defaultTimedEventDuration: "00:20:00",
+            eventColor: '#85D2d9',
+            selectOverlap: false,
+            events: events1,
+            select: function (date, allDay, jsEvent, view) {
+                var eventTitle ='Vacation';
+                $("#vacationstart").val(date.startStr)
+                $("#vacationend").val(date.endStr)
+                    calendar.addEvent({
+                        title: eventTitle,
+                        id: "vacation",
+                        allDay: true,
+                        start: date.start,
+                        end: date.end,
+                        stick: true,
+                    });
+            },
+            eventClick: function (event,jsEvent,view) {
+                var selected = calendar.getEventById(event.event._def.publicId);
+                if(selected._def.publicId == "vacation"){
+                selected.remove()
+                $("#vacationstart").val("")
+                $("#vacationend").val("")
+                }
+                },
+        });
+        const slotLabelOption = {
+            hour: 'numeric',
+            minute: '2-digit',
+            omitZeroMinute: false,
+            meridiem: 'narrow',
+            hour12: false
+        };
+        calendar.setOption('slotLabelFormat', slotLabelOption);
+        calendar.render();
+    });
+</script>

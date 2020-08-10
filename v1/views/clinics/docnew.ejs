@@ -1,0 +1,56 @@
+<%- include("../partials/header")%>
+
+<div class="container">
+    <h1>Doctors</h1>
+    <div class="row text-center">
+        <div class="col-3">
+            <nav class="nav flex-column">
+                <a class="btn btn-primary mb-2 mt-2" href="/clinics/clinic/<%=currentUserID%>/doctors" id="newdoc">View
+                    all doctors</a>
+            </nav>
+        </div>
+        <div class="col-9 ml-auto">
+            <form action="/clinics/clinic/<%=currentUserID%>/doctors/new" method="POST">
+                <label for="doc">Choose doctor:</label>
+                <select name="doctor" id="doc" required="required">
+                    <option> </option>
+                    <%doctors.forEach(function(doctor){%>
+                    <option value="<%=doctor.id%>"><%=doctor.name%> <%=doctor.surname%></option>
+                    <%})%>
+                </select>
+                <div id="spec"></div>
+                <div id="mail"></div>
+                <div class='from-group' id="hourdiv">
+                    <h4>Choose working hours</h4>
+                    <label for="starthour">Choose start hour</label>
+                    <input type="time" name="starthour" id="starthour" required="required">
+                    <label for="endhour">Choose end hour</label>
+                    <input type="time" name="endhour" id="endhour" required="required">
+                    <button class="btn btn-primary">Add new doctor</button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#hourdiv').hide();
+        $('#doc').change(function () {
+            $("#spec").html("")
+            $("#mail").html("")
+            var docId = $('#doc').val()
+            $('#hourdiv').show();
+            <% doctors.forEach(function (doctor) {%>
+                if (<%-doctor.id %> == docId) {
+                    
+                    $("#spec").html("<h4>Specizalization: <%-doctor.specialization%></h4>")
+                    $("#mail").html("<h4>E-mail: <%-doctor.email%><h4>")
+                }
+            <%}) %>
+            
+        })
+    });
+</script>
+<%- include("../partials/footer")%>

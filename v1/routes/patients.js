@@ -159,7 +159,7 @@ router.post("/appointment/:id/new", function(req,res){
     });
 });
 router.get("/appointment/:id/past", function(req,res){
-    con.query("SELECT event.id,event.startslot, event.endslot,  doctors.name as docname, doctors.surname, specialization.specialization, clinics.name as clinname, clinics.city, clinics.street FROM ((((event INNER JOIN docclin ON event.idP = ? and docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = docclin.IdD) INNER JOIN specialization ON doctors.specialization = specialization.id) INNER JOIN clinics ON docclin.IdC = clinics.id)", res.locals.currentUserID, function(err, results){
+    con.query("SELECT event.id,event.startslot, event.endslot,  doctors.name as docname, doctors.surname, specialization.specialization, clinics.name as clinname, clinics.city, clinics.street FROM ((((event INNER JOIN docclin ON event.idP = ? and docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = docclin.IdD or docclin.IdD is null) INNER JOIN specialization ON doctors.specialization = specialization.id) INNER JOIN clinics ON docclin.IdC = clinics.id)", res.locals.currentUserID, function(err, results){
         if(err){
             throw err;
         } 

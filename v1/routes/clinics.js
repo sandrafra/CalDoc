@@ -25,7 +25,7 @@ router.post("/register", function (req, res) {
             } else {
                 bcrypt.hash(req.body.password, 10, function (err, hash) {
                     var token = crypto.randomBytes(64).toString('hex');
-                    var clinic = [req.body.name, req.body.email, req.body.phone, req.body.zipcode, req.body.city, req.body.street,req.body.openhour,req.body.endhour,hash, token];
+                    var clinic = [req.body.name, req.body.email, req.body.phone, req.body.zipcode, req.body.city, req.body.street, req.body.openhour, req.body.endhour, hash, token];
 
                     con.query('INSERT INTO clinics (name, email, phone, zipcode, city, street,openhour, endhour, password, token) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)', clinic, function (err) {
                         if (err) {
@@ -53,7 +53,7 @@ router.get('/', function (req, res) {
 });
 
 router.post('/:id', function (req, res) {
-    var clinic = [req.body.name, req.body.email, req.body.phone, req.body.city, req.body.zipcode, req.body.street,req.body.openhour, req.body.endhour, req.params.id];
+    var clinic = [req.body.name, req.body.email, req.body.phone, req.body.city, req.body.zipcode, req.body.street, req.body.openhour, req.body.endhour, req.params.id];
     con.query("UPDATE clinics SET name =  ?, email= ?, phone = ?, city = ?, zipcode = ?, street = ?, openhour = ?, endhour =? WHERE id = ?", clinic, function (err) {
         if (err) throw err;
         else {
@@ -141,15 +141,96 @@ router.get('/:id/calendar', function (req, res) {
     })
 });
 
-router.get('/:id/doctors', function(req,res){
-    con.query("SELECT doctors.name, doctors.surname, doctors.email, docclin.starthour, docclin.endhour, specialization.specialization FROM ((doctors INNER JOIN docclin ON docclin.IdC = ? and docclin.IdD = doctors.id) INNER JOIN specialization ON specialization.id = doctors.specialization)", req.params.id, function(err,results){
+router.get('/:id/doctors', function (req, res) {
+    con.query("SELECT doctors.id, doctors.name, doctors.surname, doctors.email, docclin.starthour, docclin.endhour, specialization.specialization FROM ((doctors INNER JOIN docclin ON docclin.IdC = ? and docclin.IdD = doctors.id) INNER JOIN specialization ON specialization.id = doctors.specialization)", req.params.id, function (err, results) {
         if (err) {
             throw err;
         }
         else {
-            res.render("clinics/doctors", {doctors: results})
+            res.render("clinics/doctors", { doctors: results })
         }
     })
 })
+
+router.get("/:id/doctors/new", function (req, res) {
+    con.query("select * from doctors where doctors.id NOT IN (select docclin.IdD from docclin where docclin.IdC = ? and docclin.IdD is not null)", req.params.id, function (err, results) {
+        if (err) throw err;
+        else {
+            res.render('clinics/docnew', { doctors: results });
+        }
+    });
+});
+
+router.get("/:id/vacation", function(req,res){
+    con.query("SELECT event.id, event.idP, event.idDC, event.startslot, event.endslot, event.type, clinics.name as clinic, docclin.starthour, docclin.endhour, patients.name, patients.surname FROM (((event INNER JOIN docclin ON docclin.id = event.idDC and docclin.IdD = ? and docclin.IdC = ?) INNER JOIN clinics ON clinics.id = docclin.IdC) INNER JOIN patients ON patients.id = event.idP or event.idP is null)", [req.params.id, res.locals.currentUserID], function(err, results){
+        if (err) throw err;
+        else{
+            res.render("clinics/vacation", {events: results, doctor: req.params.id})
+        }
+    });
+});
+
+router.post("/:id/vacation", function(req,res){
+    con.query("SELECT id FROM docclin where IdD= ? and IdC = ?", [req.params.id, res.locals.currentUserID],function(err, result){
+        if (err) throw err;
+        else{
+            con.query("INSERT INTO event (idP, idDC, startslot, endslot, type) VALUES (NULL, ?, ?, ?, 'vacation')", [result[0].id, req.body.vacationstart, req.body.vacationend], function(err){
+                if(err) throw err;
+                else{
+                    res.redirect("back");
+                }
+            });
+        }
+    })
+    
+})
+
+router.post('/:id/doctor/hours', function (req, res) {
+    con.query("UPDATE docclin SET starthour = ?, endhour = ? WHERE IdD = ?", [req.body.starthour, req.body.endhour, req.params.id], function (err, results) {
+        if (err) {
+            throw err;
+        }
+        else {
+            res.redirect("back");
+        }
+    })
+});
+
+router.post("/:id/doctors/new", function (req, res) {
+    con.query("INSERT INTO docclin (IdC, IdD, starthour, endhour) VALUES (?,?,?,?)", [req.params.id, req.body.doctor, req.body.starthour, req.body.endhour], function (err, results) {
+        if (err) throw err;
+        else {
+            res.redirect('back');
+        }
+    });
+});
+
+router.post('/:id/doctor/delete', function (req, res) {
+    con.query("UPDATE docclin SET idD = NULL WHERE IdD = ? and IdC = ?", [req.params.id, res.locals.currentUserID], function (err) {
+        if (err) throw err
+        else {
+            con.query("SELECT * FROM event inner join docclin on docclin.id = event.idDC where docclin.IdC = ? and docclin.IdD is null", res.locals.currentUserID, function (err, results) {
+                if (results.length > 0) {
+                    var date = new Date();
+                    results.forEach(function (result) {
+                        if (result.startslot > date) {
+                            console.log(result.id)
+                            con.query("DELETE FROM event WHERE event.idDC = ?", result.id, function (err) {
+                                if (err) throw err;
+                                else {
+                                    res.redirect('back');
+                                }
+                            });
+                        }
+                    })
+                } else {
+                    res.redirect('back');
+                }
+            })
+        }
+    })
+});
+
+
 
 module.exports = router;
