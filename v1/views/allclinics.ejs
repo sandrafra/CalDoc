@@ -1,30 +1,40 @@
 <%- include("./partials/header")%>
-
+<div class="m-2">
+<h3>View the clinics avaliable on the DocCal</h3>
+</div>
+<div class="lineshadow mb-3"></div>
 <div class="container">
-    <div class="container">
-        <h1>Clinics</h1>
-        <p>View the clinics avaliable on the DocCal</p>
-    </div>
     <div class="row text-center">
         <% clinics.forEach(function(clinic){ %>
-        <div class="col-md-3 col-sm-6">
-            <div class="thumbnail">
-                <h4><%= clinic.name%></h4>
-                <div class="caption thumbnail">
-                    <h4>Adres</h3>
-                        <h6><%= clinic.city%></h6>
-                        <h6><%= clinic.zipcode%></h6>
-                        <h6><%= clinic.street%></h6>
-                        <h6><%= clinic.email%></h6>
-                        <h6><%= clinic.phone%></h6>
+        <div class="col-md-4 col-sm-4 col-xs-12 animated fadeInDown">
+            <div class="well profile_view">
+                <div class="col-sm-12">
+                    <div class="left col-xs-7 mb-2">
+                        <h2><%= clinic.name%></h2>
+                        <ul class="list-unstyled">
+                            <li><strong>Open hours</strong> <%=clinic.openhour%> <%=clinic.endhour%></li>
+                            <li><strong> <i class="fas fa-map-marked-alt"></i> Adress:</strong> <%= clinic.city%>
+                                <%= clinic.zipcode%> <%= clinic.street%></li>
+                        </ul>
+                        <p>Contact: </p>
+                        <p><strong><i class="fas fa-at"></i> Email: </strong> <%= clinic.email%></p>
+                        <p><strong><i class="fa fa-phone"></i> Phone: </strong> <%= clinic.phone%></p>
+                    </div>
                 </div>
-                <form action="/<%=clinic.id%>/doctors" method="POST">
-                    <button type="submit" class="btn btn-primary">See doctors</button>
-                    </form>
+                <div class="col-xs-12 bottom text-center mt-2">
+                    <div class="col-xs-12 col-sm-6 m-auto">
+                        <form action="/<%=clinic.id%>/doctors" method="POST">
+                            <button class="btn btn-primary">
+                                <i class="fa fa-user"></i> View all doctors
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         <%}) %>
     </div>
 </div>
+
 
 <%- include("./partials/footer")%>

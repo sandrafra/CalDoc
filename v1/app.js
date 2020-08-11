@@ -27,7 +27,6 @@ var MySQLStore = require('express-mysql-session')(session);
 var LocalStrategy = require('passport-local').Strategy;
 require("dotenv").config();
 
-
 var sessionStore = new MySQLStore(options);
 
 app.use(session({
@@ -67,9 +66,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-
-
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
@@ -80,9 +76,6 @@ app.use(indexRoutes);
 app.use("/patients/patient", patientsRoutes);
 app.use("/doctors/doctor", doctorsRoutes);
 app.use("/clinics/clinic", clinicsRoutes);
-
-///MIDDLEWARe
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

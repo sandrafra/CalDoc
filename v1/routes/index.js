@@ -37,9 +37,9 @@ router.get("/signup", function (req, res) {
 
 router.get("/logout", function (req, res) {
     req.flash("success", "Logged you out");
-    req.session.destroy();
     res.locals.type = '';
-    res.locals.currentUserID = undefined;
+    res.locals.currentUserID = '';
+    req.session.destroy();
     req.logout();
     res.render("index");
 });
@@ -55,7 +55,6 @@ router.post('/forgot', function (req, res, next) {
                 var token = buf.toString('hex');
                 var ans1 = "SELECT * FROM patients WHERE email = '" + req.body.email + "'";
                 con.query(ans1, function (err, result) {
-                    console.log(result)
                     if (result.length > 0) {
                         type = "patients";
                         done(err, token, type);
@@ -63,7 +62,6 @@ router.post('/forgot', function (req, res, next) {
                 });
                 var ans2 = "SELECT * FROM doctors WHERE email = '" + req.body.email + "'";
                 con.query(ans2, function (err, result) {
-                    console.log(result)
                     if (result.length > 0) {
                         type = "doctors";
                         done(err, token, type);
@@ -71,7 +69,6 @@ router.post('/forgot', function (req, res, next) {
                 });
                 var ans3 = "SELECT * FROM clinics WHERE email = '" + req.body.email + "'";
                 con.query(ans3, function (err, result) {
-                    console.log(result)
                     if (result.length > 0) {
                         type = "clinics";
                         done(err, token, type);
@@ -94,7 +91,6 @@ router.post('/forgot', function (req, res, next) {
             })
         },
         function (token, email, done) {
-            console.log(email);
             var mailOptions = {
                 to: email,
                 from: 'DocCal',
@@ -122,13 +118,9 @@ router.post('/forgot', function (req, res, next) {
 
 router.get('/reset/:token', function (req, res) {
     var ans = "SELECT * FROM patients WHERE resettoken = '" + req.params.token + "'";
-    console.log(ans);
     con.query(ans, function (err, result) {
         if (result.length > 0) {
-            console.log(Date.now());
-            console.log(result[0].resetexpires);
             if (result[0].resetexpires > Date.now()) {
-                console.log("sds");
                 return res.render('reset', { token: req.params.token, type: "patients" });
             }
         }
@@ -142,10 +134,8 @@ router.get('/reset/:token', function (req, res) {
         }
     });
     var ans3 = "SELECT * FROM clinics WHERE resettoken = '" + req.params.token + "'";
-    console.log(ans3);
     con.query(ans3, function (err, result) {
         if (result.length > 0) {
-            console.log(result[0].resetexpires);
             if (result[0].resetexpires > Date.now()) {
                 return res.render('reset', { token: req.params.token, type: "clinics" });
             }
@@ -161,7 +151,7 @@ router.post('/reset/:token/:type', function (req, res) {
             if (req.body.password === req.body.confirm) {
                 bcrypt.hash(req.body.password, 8, function (err, hash) {
                     var update = "UPDATE " + req.params.type + " SET resettoken = 0, resetexpires = 0, password = '" + hash + "' WHERE resettoken = '" + req.params.token + "'";
-                    console.log(update)
+                 
                     con.query(update, function (err) {
                         if (err) {
                             console.log("Cannot update a password");
@@ -174,7 +164,6 @@ router.post('/reset/:token/:type', function (req, res) {
                 });
             } else {
                 req.flash("error", "Passwords do not match.");
-                console.log("wrong password")
                 return res.redirect('back');
             }
         },
@@ -201,7 +190,6 @@ router.get("/confirmed/:token", function (req, res) {
     con.query(ans, function (err, result) {
         if (result.length > 0) {
             con.query("UPDATE patients SET token = 0, confirmed = 1 WHERE email = ?", result[0].email, function (err, result) {
-                console.log("account confimred 1");
                 return res.redirect("/home");
             });
             return 0;
@@ -225,7 +213,6 @@ router.get("/confirmed/:token", function (req, res) {
     con.query(ans, function (err, result) {
         if (result.length > 0) {
             con.query("UPDATE clinics SET token = 0, confirmed = 1 WHERE email = ?", result[0].email, function (err, result) {
-                console.log("account confimred 3");
                 return res.redirect("/home");
             });
             return 0;
@@ -237,7 +224,7 @@ router.get("/confirmed/:token", function (req, res) {
 });
 
 router.get("/allclinics", function (req, res) {
-    con.query("SELECT id, name, city, zipcode, street, phone, email from clinics", function (err, result) {
+    con.query("SELECT id, name, city, zipcode, street, phone, email, openhour, endhour from clinics", function (err, result) {
         if (err) throw err;
         else {
             res.render('allclinics', { clinics: result });
@@ -256,7 +243,6 @@ router.get("/alldoctors", function (req, res) {
 });
 
 router.post("/:idD/clinics", function (req, res) {
-    console.log(req.params.idD)
     con.query("SELECT IdC FROM docclin WHERE IdD = ?", req.params.idD, async function (err, results) {
         if (err) throw err;
         else {
@@ -270,22 +256,22 @@ router.post("/:idD/clinics", function (req, res) {
                     if (rows.length > 0) {
                         clinics.push(rows[0]);
                     }
-                    con.query("SELECT name, surname FROM doctors WHERE id = ?", req.params.idD, function (err, names) {
-                        if (err) throw err;
-                        else {
-                            name = [names[0].name, names[0].surname];
-                        }
-                    })
-
+                    answer2 = "SELECT name, surname FROM doctors WHERE id = '" + req.params.idD + "'";
+                        var rows2 = await con.promise().query(answer2);
+                        name.push(rows2[0])
                 }
+                name2 = name[0]
+                console.log(name2[0])
+                res.render("clinics", { clinics: clinics, name: [name2[0].name, name2[0].surname] });
+            } else {
+                req.flash("error", "No asigned linics")
+                res.redirect("back");
             }
-            res.render("clinics", { clinics: clinics, name: name });
         }
     });
 });
 router.post("/:idC/doctors", function (req, res) {
-
-    con.query("SELECT IdD FROM docclin WHERE IdC= ?", req.params.idC, async function (err, results) {
+    con.query("SELECT IdD FROM docclin WHERE IdC= ? and IdD is not null", req.params.idC, async function (err, results) {
         if (err) throw err;
         else {
             if (results.length > 0) {
@@ -293,21 +279,24 @@ router.post("/:idC/doctors", function (req, res) {
                 var name = [];
                 for (var i = 0; i < results.length; i++) {
                     var answer;
-                    answer = "SELECT doctors.id, doctors.name, doctors.surname, doctors.email, specialization.specialization FROM doctors INNER JOIN specialization ON specialization.id = doctors.id and doctors.id = '" + results[i].IdD + "'";
+                    answer = "SELECT doctors.id, doctors.name, doctors.surname, doctors.email, docclin.starthour, docclin.endhour, specialization.specialization FROM ((doctors INNER JOIN docclin ON docclin.IdD = doctors.id and docclin.IdC = '"+ req.params.idC +"') INNER JOIN specialization ON specialization.id = doctors.specialization) where doctors.id ='" + results[i].IdD + "'";
                     var rows = await con.promise().query(answer);
                     if (rows.length > 0) {
                         doctors.push(rows[0]);
+                        answer2 = "SELECT name FROM clinics WHERE id = '" + req.params.idC + "'";
+                        var rows2 = await con.promise().query(answer2);
+                        name.push(rows2[0])
+                        
+                    } 
                 }
-                con.query("SELECT name FROM clinics WHERE id = ?", req.params.idC, function(err,names){
-                    if (err) throw err;
-                    else{
-                         name = names[0].name;
-                    }
-                })
+                name2 = name[0]
+                res.render("doctors", { doctors: doctors, name: name2[0].name });
             }
-        }
-            res.render("doctors", { doctors: doctors, name: name });
-        }
+            else{
+                req.flash("error", "No asign clinics")
+                res.redirect("back");
+            }
+        } 
     });
 });
 module.exports = router;

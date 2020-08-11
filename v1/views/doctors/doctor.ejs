@@ -15,7 +15,6 @@
                 <input type="text" name="surname" placeholder="Surname" required="required" value="<%=doctor.surname%>"/>
                 <input type="email" name="email" placeholder="Email" required="required" value="<%=doctor.email%>"/>
                 <select name="specialization" id="spec">
-                   
                     <%specializations.forEach(function(spec){%>
                         <%if(spec.id != doctor.specialization){%>
                     <option value="<%=spec.id%>" selected><%=spec.specialization%></option>

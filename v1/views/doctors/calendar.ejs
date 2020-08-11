@@ -29,7 +29,7 @@
             id: <%- JSON.stringify(event.id) %>,
             end: <%- JSON.stringify(event.endslot) %>,
             start: <%-JSON.stringify(event.startslot) %>,
-            title: "Vacation",
+            title: "Vacation - " + <%-JSON.stringify(event.clinic) %>,
         };
     } else{
     if (today < start) {

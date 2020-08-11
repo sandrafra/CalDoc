@@ -46,7 +46,6 @@ router.get('/', function (req, res) {
     con.query("SELECT id, name, email, phone, city, zipcode, street, openhour, endhour FROM clinics WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
         else {
-            console.log(result)
             res.render('clinics/clinic', { clinic: result[0] });
         }
     });
@@ -161,28 +160,41 @@ router.get("/:id/doctors/new", function (req, res) {
     });
 });
 
-router.get("/:id/vacation", function(req,res){
-    con.query("SELECT event.id, event.idP, event.idDC, event.startslot, event.endslot, event.type, clinics.name as clinic, docclin.starthour, docclin.endhour, patients.name, patients.surname FROM (((event INNER JOIN docclin ON docclin.id = event.idDC and docclin.IdD = ? and docclin.IdC = ?) INNER JOIN clinics ON clinics.id = docclin.IdC) INNER JOIN patients ON patients.id = event.idP or event.idP is null)", [req.params.id, res.locals.currentUserID], function(err, results){
+router.get("/:id/vacation", function (req, res) {
+    con.query("SELECT event.id, event.idP, event.idDC, event.startslot, event.endslot, event.type, clinics.name as clinic, docclin.starthour, docclin.endhour, patients.name, patients.surname FROM (((event INNER JOIN docclin ON docclin.id = event.idDC and docclin.IdD = ? and docclin.IdC = ?) INNER JOIN clinics ON clinics.id = docclin.IdC) INNER JOIN patients ON patients.id = event.idP or event.idP is null)", [req.params.id, res.locals.currentUserID], function (err, results) {
         if (err) throw err;
-        else{
-            res.render("clinics/vacation", {events: results, doctor: req.params.id})
+        else {
+            res.render("clinics/vacation", { events: results, doctor: req.params.id })
         }
     });
 });
 
-router.post("/:id/vacation", function(req,res){
-    con.query("SELECT id FROM docclin where IdD= ? and IdC = ?", [req.params.id, res.locals.currentUserID],function(err, result){
+router.post("/:id/vacation", function (req, res) {
+    con.query("SELECT docclin.id, event.startslot FROM docclin INNER JOIN event ON event.idDC = docclin.id where docclin.IdD= ? and docclin.IdC = ?", [req.params.id, res.locals.currentUserID], function (err, results) {
         if (err) throw err;
-        else{
-            con.query("INSERT INTO event (idP, idDC, startslot, endslot, type) VALUES (NULL, ?, ?, ?, 'vacation')", [result[0].id, req.body.vacationstart, req.body.vacationend], function(err){
-                if(err) throw err;
-                else{
-                    res.redirect("back");
+        else {
+            con.query("INSERT INTO event (idP, idDC, startslot, endslot, type) VALUES (NULL, ?, ?, ?, 'vacation')", [results[0].id, req.body.vacationstart, req.body.vacationend], function (err) {
+                if (err) throw err;
+                else {
+                    var date = new Date();
+                    results.forEach(function (result) {
+                        if (result.startslot > date) {
+                            con.query("DELETE FROM event WHERE event.idDC = ?", result.id, function (err) {
+                                if (err) throw err;
+                                else {
+                                    res.redirect('back');
+                                }
+                            });
+                        }
+                        else{
+                            res.redirect('back');
+                        }
+                    });
                 }
             });
         }
     })
-    
+
 })
 
 router.post('/:id/doctor/hours', function (req, res) {
@@ -214,7 +226,6 @@ router.post('/:id/doctor/delete', function (req, res) {
                     var date = new Date();
                     results.forEach(function (result) {
                         if (result.startslot > date) {
-                            console.log(result.id)
                             con.query("DELETE FROM event WHERE event.idDC = ?", result.id, function (err) {
                                 if (err) throw err;
                                 else {

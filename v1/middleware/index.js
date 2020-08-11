@@ -17,7 +17,7 @@ middlewareObj.profileLogin =  function(req ,type, requestBody, done) {
     var answer = 'SELECT * FROM ' + type + 's WHERE email = ?';
     con.query(answer, requestBody.email, function (err, result, fields) {
         if (err) {
-            console.log(err);
+            throw err;
         }
         else {
             if (result.length > 0) {
@@ -90,8 +90,6 @@ middlewareObj.isClinic = function(req, res, next) {
 
 middlewareObj.checkAuth = function(req,res, next){
     if (req.isAuthenticated()) {
-        console.log(res.locals.currentUserID)
-        console.log(req.params.id)
         if(res.locals.currentUserID == req.params.id){
             return next();
         }

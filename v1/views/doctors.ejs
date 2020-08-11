@@ -1,26 +1,30 @@
 <%- include("./partials/header")%>
-
+<div class="m-2">
+    <h2>Clinic <%=name%></h2>
+</div>
+<div class="lineshadow mb-3"></div>
 <div class="container">
-    <div class="container">
-        <h1>Doctors</h1>
-        <p>View doctors avaliable on <%=name[0]%></p>
-    </div>
     <div class="row text-center">
-    <% doctors.forEach(function(doctor){ %>
-        <% doctor.find(TextRow =>{ %>
-        <div class="col-md-3 col-sm-6">
-            <div class="thumbnail">
-                <h3><%= TextRow.name%></h4><h4><%= TextRow.surname%></h4>
-                <div class="caption">
-                    <h4>Adres</h4>
-                    <h6><%= TextRow.specialization%></h6>
-                    <h6><%= TextRow.email%></h6>
+        <% doctors.forEach(function(doctor){ %>
+            <% doctor.find(TextRow =>{ %>
+        <div class="col-md-4 col-sm-4 col-xs-12 animated fadeInDown">
+            <div class="well profile_view">
+                <div class="col-sm-12">
+                    <div class="left col-xs-7 mb-2">
+                        <h1><%= TextRow.name%> <%=TextRow.surname%></h1>
+                        <ul class="list-unstyled">
+                            <li><strong> Specialization:</strong> <%= TextRow.specialization%></li>
+                            <li><strong> Working hours:</strong> <%= TextRow.starthour%> to <%= TextRow.endhour%></li>
+                        </ul>
+                        
+                        <p><strong><i class="fas fa-at"></i> Email: </strong> <%= TextRow.email%></p>
+                    </div>
+                </div>
             </div>
         </div>
-
-</div>
-<%})%>
+        <%})%>
 <%}) %>
+    </div>
 </div>
 
 <%- include("./partials/footer")%>
