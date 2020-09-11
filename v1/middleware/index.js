@@ -57,7 +57,7 @@ middlewareObj.verificationEmail =  function(email, token) {
         subject: "User Verification",
         text: "Hello, Thank you for registration in app DocCal!" + 
               "To finish you registration please confirm you email by clicking below link:" + 
-              "http://localhost:3000/confirmed/" + token
+              "https://doccal.herokuapp.com/confirmed/" + token
     });
 }
 
