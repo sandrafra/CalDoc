@@ -17,11 +17,7 @@ nav .navbar-nav li a{
 	margin: 0 auto;
 	padding-right: 25px;
 }
-.login {
-	width: 50%;
-	margin: 0 auto;
-	margin-top: 40px;
-}
+
 .login form{
 	display: block;
     text-align: center
@@ -44,7 +40,7 @@ nav .navbar-nav li a{
  }
 .container-fluid {
 	background-image: url(/pictures/blue-and-silver-stetoscope-40568.jpg);
-	opacity: 70%;
+	opacity: 80%;
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
@@ -56,9 +52,12 @@ nav .navbar-nav li a{
 }
 .maintext{
 	height: 100%;
-	padding-top: 300px;
+	padding-top: 150px;
 	text-decoration: bold;
-
+	font-size: 30px;
+	color: rgb(39, 38, 38);
+	opacity: 100%;
+	margin-left: 60px;
 }
 #intro {
 	margin: 70px auto;
@@ -82,6 +81,13 @@ a {
 .lineshadow{
 	border: 1px solid  rgb(34, 128, 123);;
 	width: 800px;
+	margin: 0 auto;
+	box-shadow: 2px 3px 15px 0px rgba(0,0,0,0.8);
+}
+
+.shortline {
+	border: 1px solid  rgb(34, 128, 123);;
+	width: 600px;
 	margin: 0 auto;
 	box-shadow: 2px 3px 15px 0px rgba(0,0,0,0.8);
 }
@@ -144,7 +150,7 @@ a:hover {
 	 margin: auto;
 	 padding: 10px;
 	 background-color: rgb(235, 152, 161);
-	 border: 2px solid b
+	 border: 2px solid black
  }
 
  select {
@@ -247,4 +253,69 @@ a:hover {
 .profile_left {
     background: white;
 }
-             
+
+#title {
+	font-size: 100px;
+	margin-left: 60px;
+}
+
+.profil {
+	width: 320px;
+	height: 180px;
+	text-align: center;
+	margin: 5px;
+	padding-top: 60px;
+	font-size: 30px;
+}
+
+.register {
+	width: 400px;
+	padding: 5px;
+	margin: 0 auto;
+	border: solid 2px black;
+	background-color: rgba(75, 199, 212, 0.5);
+}
+
+.register input{
+	margin-right: 10px;
+}
+
+.register input[type="time"]{
+	margin-right: 50px;
+}
+ 
+.register label{
+	margin-left: 10px;
+}
+.login {
+	width: 400px;
+	padding: 5px;
+	margin: 0 auto;
+	border: solid 2px black;
+	background-color: rgba(75, 199, 212, 0.5);
+}
+
+.edit {
+	width: 400px;
+	padding: 5px;
+	margin: 0 auto;
+	border: solid 2px black;
+	background-color: rgba(75, 199, 212, 0.5);
+}
+
+.edit input{
+	margin-right: 40px;
+}
+
+.edit label{
+	margin-left: 40px;
+}
+
+.minimenu {
+	margin-left : 180px;
+}
+
+.minimenu a {
+	margin: 5px;
+}
+

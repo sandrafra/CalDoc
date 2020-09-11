@@ -55,7 +55,9 @@ middlewareObj.verificationEmail =  function(email, token) {
         from: "DocCal",
         to: email,
         subject: "User Verification",
-        text: "Hello, Thank you for registration in app DocCal! To finish you registration please confirm you email by clicking below link: http://localhost:3000/confirmed/" + token
+        text: "Hello, Thank you for registration in app DocCal!" + 
+              "To finish you registration please confirm you email by clicking below link:" + 
+              "http://localhost:3000/confirmed/" + token
     });
 }
 
@@ -89,7 +91,10 @@ middlewareObj.isClinic = function(req, res, next) {
 }
 
 middlewareObj.checkAuth = function(req,res, next){
+    console.log(res.locals.currentUserID)
     if (req.isAuthenticated()) {
+        console.log(res.locals.currentUserID)
+        console.log(req.params.id)
         if(res.locals.currentUserID == req.params.id){
             return next();
         }

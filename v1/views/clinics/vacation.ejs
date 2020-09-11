@@ -14,7 +14,7 @@
         <div class="col-9">
             <p>Pick vacation days on the calendar or type date into the inputs under calendar</p>
             <div id='calendar' class="mb-3"></div>
-            <form action="/clinics/clinic/<%=doctor%>/vacation" method="POST">
+            <form action="/clinics/clinic/<%=currentUserID%>/<%=doctor%>/vacation" method="POST" class="form-inline">
                 <label for="vacationstart">Vacation days: </label>
                 <input type="datatime" name="vacationstart" id="vacationstart"> to
                 <input type="datatime" name="vacationend" id="vacationend">

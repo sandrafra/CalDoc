@@ -108,7 +108,7 @@ router.post("/:id/password", middleware.isPatient, middleware.isLoggedin, middle
         }
     });
 });
-router.get("/delete", function(req,res){
+router.get("/delete", middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
     con.query("SELECT id, name FROM patients WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
         else {
@@ -116,7 +116,7 @@ router.get("/delete", function(req,res){
         }
     });
 });
-router.post("/:id/delete", function(req,res){
+router.post("/:id/delete", middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
     con.query("DELETE FROM patients WHERE id =? ", req.params.id, function(err){
         if (err) throw err;
         else {
@@ -126,7 +126,7 @@ router.post("/:id/delete", function(req,res){
         }
     });
 });
-router.get("/appointment" , function(req,res){
+router.get("/appointment/:id" , middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
     con.query("SELECT * FROM event WHERE idP = ?", res.locals.currentUserID, function(err, results){
         if(err){
             throw err;
@@ -137,7 +137,7 @@ router.get("/appointment" , function(req,res){
         }
     })
 })
-router.get("/appointment/:id/new", async function(req,res){
+router.get("/appointment/:id/new",middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, async function(req,res){
     var clinics, specializations, docclin;
      clinics = await con.promise().query("SELECT * FROM clinics")
      specializations = await con.promise().query("SELECT * FROM specialization")
@@ -145,10 +145,10 @@ router.get("/appointment/:id/new", async function(req,res){
     res.render("patients/newappointment", {clinics: clinics[0], specializations: specializations[0], docclins: docclin[0], patient: req.params.id});
 });
 
-router.post("/appointment/:id/new", function(req,res){
+router.post("/appointment/:id/new", middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
     con.query("SELECT id FROM docclin WHERE IdC = '" + req.body.clinic + "' AND IdD = '"+ req.body.doctor+"'", function(err, result){
-        var newevent= [req.params.id, result[0].id, req.body.date, req.body.start, req.body.end];
-        con.query("INSERT INTO event (idP, idDC,date, startslot, endslot) values (?,?,?,?,?)", newevent, function(err){
+        var newevent= [req.params.id, result[0].id, req.body.start, req.body.end];
+        con.query("INSERT INTO event (idP, idDC, startslot, endslot) values (?,?,?,?)", newevent, function(err){
             if (err){
                 throw err;
             } else{
@@ -158,7 +158,7 @@ router.post("/appointment/:id/new", function(req,res){
         })
     });
 });
-router.get("/appointment/:id/past", function(req,res){
+router.get("/appointment/:id/past", middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
     con.query("SELECT event.id,event.startslot, event.endslot,  doctors.name as docname, doctors.surname, specialization.specialization, clinics.name as clinname, clinics.city, clinics.street FROM ((((event INNER JOIN docclin ON event.idP = ? and docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = docclin.IdD or docclin.IdD is null) INNER JOIN specialization ON doctors.specialization = specialization.id) INNER JOIN clinics ON docclin.IdC = clinics.id)", res.locals.currentUserID, function(err, results){
         if(err){
             throw err;
@@ -176,7 +176,7 @@ router.get("/appointment/:id/past", function(req,res){
         }
     })
 })
-router.get("/appointment/:id/next", function(req,res){
+router.get("/appointment/:id/next", middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
     con.query("SELECT event.id, event.startslot, event.endslot,  doctors.name as docname, doctors.surname, specialization.specialization, clinics.name as clinname, clinics.city, clinics.street FROM ((((event INNER JOIN docclin ON event.idP = ? and docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = docclin.IdD) INNER JOIN specialization ON doctors.specialization = specialization.id) INNER JOIN clinics ON docclin.IdC = clinics.id)", res.locals.currentUserID, function(err, results){
         if(err){
             throw err;
@@ -195,7 +195,7 @@ router.get("/appointment/:id/next", function(req,res){
     });
 });
 
-router.get("/appointment/:eventid/delete", function(req,res){
+router.get("/appointment/:eventid/delete", middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
     con.query("DELETE FROM event WHERE id =? ", req.params.eventid, function(err){
         if (err) throw err;
         else{
@@ -218,7 +218,7 @@ router.get("/test",function(req,res){
     });
 });
 
-router.get("/event", function(req,res){
+router.get("/event",  middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
     con.query("SELECT id, starthour, endhour FROM docclin WHERE IdC = '"+req.query.clinId+ "' AND IdD = '" +req.query.docId+"'", function(err,result){
             con.query("SELECT * FROM event WHERE idDC = '" + result[0].id+ "'", function(err, events){
                 console.log(events)

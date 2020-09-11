@@ -1,19 +1,29 @@
 <%- include("../partials/header")%>
 <div class="container">
     <h1>My profile</h1>
-    <div class="row">
-        <div class="col-4">
+    <div class="lineshadow" style="margin-bottom: 30px;"></div>
+    <div class="row ">
+        <div class="col-3 minimenu">
             <nav class="nav flex-column">
-                <a class="nav-link active" href="/patients/patient">Personal Settings</a>
-                <a class="nav-link" href="/patients/patient/password">Change Password</a>
-                <a class="nav-link" href="/patients/patient/delete">Delete Account</a>
+                <a class="nav-link active btn btn-info" href="/patients/patient">Personal Settings</a>
+                <a class="nav-link btn btn-info" href="/patients/patient/password">Change Password</a>
+                <a class="nav-link btn btn-danger" href="/patients/patient/delete">Delete Account</a>
             </nav>
         </div>
-        <div class="col-6">
-            <form action="/patients/patient/<%=patient.id%>" method="POST">
+        <div class="col-6 ">
+            <form class='edit' action="/patients/patient/<%=patient.id%>" method="POST">
+                <div class="form-group form-inline">
+                    <label>Name:</label>
                 <input type="text" name="name" placeholder="Name" required="required" value="<%=patient.name%>"/>
+                </div>
+                <div class="form-group form-inline">
+                    <label>Surname:</label>
                 <input type="text" name="surname" placeholder="Surname" required="required" value="<%=patient.surname%>"/>
+                </div>
+                <div class="form-group form-inline">
+                    <label>E-mail:</label>
                 <input type="email" name="email" placeholder="Email" required="required" value="<%=patient.email%>"/>
+                </div>
                 <button type="submit" class="btn btn-primary btn-large">Save</button>
             </form>
         </div>

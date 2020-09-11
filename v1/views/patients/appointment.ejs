@@ -6,7 +6,7 @@
     <div class="row">
         <div class="col-2">
             <nav class="nav flex-column">
-                <a class="nav-link active" href="/patients/patient/appointment">My calendar</a>
+                <a class="nav-link active" href="/patients/patient/appointment/<%=currentUserID%>">My calendar</a>
                 <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/new"">New Appointment</a>
                 <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/past"">Past Appointment</a>
                 <a class="nav-link" href="/patients/patient/appointment/<%=currentUserID%>/next"">Next Appointment</a>
@@ -47,6 +47,7 @@
     $(document).ready(function () {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
+            height: 500,
             initialView: 'timeGridWeek',
             slotDuration: "00:20:00",
             slotLabelInterval: "00:20:00",

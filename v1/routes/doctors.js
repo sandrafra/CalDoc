@@ -56,7 +56,7 @@ router.get('/', function (req, res) {
     });
 });
 
-router.get('/:id/calendar', function (req, res) {
+router.get('/:id/calendar',function (req, res) {
     con.query("SELECT event.id, clinics.name as clinic, event.startslot, event.endslot, event.idDC, docclin.starthour, event.type, docclin.endhour, patients.name, patients.surname FROM ((((event INNER JOIN docclin ON docclin.id = event.idDC) INNER JOIN doctors ON doctors.id = ? and docclin.IdD = doctors.id) INNER JOIN clinics ON docclin.IdC = clinics.id) INNER JOIN patients ON patients.id = event.idP or event.idP is null)", req.params.id, function (err, results) {
         if (err) {
             throw err;
@@ -87,7 +87,7 @@ router.get('/appointment/new/:id', function (req, res) {
     })
 });
 
-router.get('/appointment/edit/:id', function (req, res) {
+router.get('/appointment/edit/:id', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     con.query("SELECT event.id as idE,event.idP, event.startslot, event.endslot, patients.name, patients.surname, patients.email, patients.id FROM event INNER JOIN patients ON event.idP = patients.id and event.id =?", req.params.id, function (err, results) {
         if (err) throw err
         else {
@@ -114,7 +114,7 @@ router.get('/appointment/edit/:id', function (req, res) {
 
 });
 
-router.post('/appointment/new/:idE', function (req, res) {
+router.post('/appointment/new/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     var medlist = req.body.medlist
     console.log(typeof (medlist))
     if (medlist) {
@@ -145,7 +145,7 @@ router.post('/appointment/new/:idE', function (req, res) {
 
     res.redirect("back");
 });
-router.post('/appointment/edit/:idE', function (req, res) {
+router.post('/appointment/edit/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     var diagnose = req.body.diagnose
     if (diagnose) {
         con.query("SELECT * FROM diagnoses WHERE idE = ?", req.params.idE, function(err, result){
@@ -228,7 +228,7 @@ router.post("/:id/password", middleware.isDoctor, middleware.isLoggedin, middlew
     });
 });
 
-router.get("/delete", function (req, res) {
+router.get("/:id/delete", middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     con.query("SELECT id, name FROM doctors WHERE id = ?", req.user, function (err, result) {
         if (err) throw err;
         else {
@@ -236,7 +236,7 @@ router.get("/delete", function (req, res) {
         }
     });
 });
-router.post("/:id/delete", function (req, res) {
+router.post("/:id/delete", middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     con.query("DELETE FROM doctors WHERE id =? ", req.params.id, function (err) {
         if (err) throw err;
         else {

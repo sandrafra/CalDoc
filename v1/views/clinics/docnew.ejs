@@ -9,7 +9,7 @@
                     all doctors</a>
             </nav>
         </div>
-        <div class="col-9 ml-auto">
+        <div class="col-9 ml-auto edit">
             <form action="/clinics/clinic/<%=currentUserID%>/doctors/new" method="POST">
                 <label for="doc">Choose doctor:</label>
                 <select name="doctor" id="doc" required="required">
@@ -20,12 +20,17 @@
                 </select>
                 <div id="spec"></div>
                 <div id="mail"></div>
-                <div class='from-group' id="hourdiv">
-                    <h4>Choose working hours</h4>
-                    <label for="starthour">Choose start hour</label>
+                
+                <div id="hourdiv">
+                    <h6>Choose working hours</h6>
+                    <div class="form-group form-inline" style="width: 350px; margin: 0 auto;">
+                    <label for="starthour">Choose start hour: </label>
                     <input type="time" name="starthour" id="starthour" required="required">
-                    <label for="endhour">Choose end hour</label>
+                </div>
+                <div class="form-group form-inline" style="width: 350px; margin: 0 auto;">
+                    <label for="endhour">Choose end hour: </label>
                     <input type="time" name="endhour" id="endhour" required="required">
+                </div>
                     <button class="btn btn-primary">Add new doctor</button>
                 </div>
                 

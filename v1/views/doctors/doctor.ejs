@@ -1,20 +1,32 @@
 <%- include("../partials/header")%>
 <div class="container">
     <h1>My profile</h1>
-    <div class="row">
-        <div class="col-4">
+    <div class="lineshadow" style="margin-bottom: 30px;"></div>
+    <div class="row ">
+        <div class="col-3 minimenu">
             <nav class="nav flex-column">
-                <a class="nav-link active" href="/doctors/doctor">Personal Settings</a>
-                <a class="nav-link" href="/doctors/doctor/password">Change Password</a>
-                <a class="nav-link" href="/doctors/doctor/delete">Delete Account</a>
+                <a class="nav-link active btn btn-info" href="/doctors/doctor">Personal Settings</a>
+                <a class="nav-link btn btn-info" href="/doctors/doctor/password">Change Password</a>
+                <a class="nav-link btn btn-danger" href="/doctors/doctor/<%=doctor.id%>/delete">Delete Account</a>
             </nav>
         </div>
         <div class="col-6">
-            <form action="/doctors/doctor/<%=doctor.id%>" method="POST">
+            <form class='edit' action="/doctors/doctor/<%=doctor.id%>" method="POST">
+                <div class="form-group form-inline">
+                <label>Name:</label>
                 <input type="text" name="name" placeholder="Name" required="required" value="<%=doctor.name%>"/>
+                 </div>
+                 <div class="form-group form-inline">
+                <label>Surname:</label>
                 <input type="text" name="surname" placeholder="Surname" required="required" value="<%=doctor.surname%>"/>
+                </div>
+                <div class="form-group form-inline">
+                <label>E-mail:</label>
                 <input type="email" name="email" placeholder="Email" required="required" value="<%=doctor.email%>"/>
-                <select name="specialization" id="spec">
+                </div>
+                <div class="form-group form-inline">
+                <label>Specialization:     </label>
+                <select name="specialization" id="spec" style="width: 180px; margin-left: 20px;">
                     <%specializations.forEach(function(spec){%>
                         <%if(spec.id != doctor.specialization){%>
                     <option value="<%=spec.id%>" selected><%=spec.specialization%></option>
@@ -22,6 +34,7 @@
                         <option value="<%=doctor.specialization%>"><%=spec.specialization%></option>
                     <%}})%>
                   </select>
+                </div>
                 <button type="submit" class="btn btn-primary btn-large">Save</button>
             </form>
         </div>

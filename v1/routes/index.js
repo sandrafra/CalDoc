@@ -264,7 +264,7 @@ router.post("/:idD/clinics", function (req, res) {
                 console.log(name2[0])
                 res.render("clinics", { clinics: clinics, name: [name2[0].name, name2[0].surname] });
             } else {
-                req.flash("error", "No asigned linics")
+                req.flash("error", "No asigned clinics")
                 res.redirect("back");
             }
         }
@@ -293,7 +293,7 @@ router.post("/:idC/doctors", function (req, res) {
                 res.render("doctors", { doctors: doctors, name: name2[0].name });
             }
             else{
-                req.flash("error", "No asign clinics")
+                req.flash("error", "No asigned doctors")
                 res.redirect("back");
             }
         } 

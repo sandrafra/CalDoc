@@ -3,48 +3,56 @@
     <h1>
         Create new appointment
     </h1>
+    <div class="lineshadow" style="margin-bottom: 30px;"></div>
     <div class="row">
-        <div class="col-4">
+        <div class="col-3" style="margin-left: 60px">
             <nav class="nav flex-column">
-                <a class="nav-link " href="/patients/patient/appointment">My Calendar</a>
-                <a class="nav-link active" href="/patients/patient/appointment/<%=patient%>/new"">New Appointment</a>
-                <a class="nav-link" href="/patients/patient/appointment/<%=patient%>/past"">Past Appointment</a>
-                <a class="nav-link" href="/patients/patient/appointment/<%=patient%>/next">Next Appointment</a>
+                <a style="margin-bottom: 5px;" class="nav-link btn btn-info" href="/patients/patient/appointment/<%=currentUserID%>">My Calendar</a>
+                <a style="margin-bottom: 5px;" class="nav-link active btn btn-info" href="/patients/patient/appointment/<%=currentUserID%>/new"">New Appointment</a>
+                <a style="margin-bottom: 5px;" class="nav-link btn btn-info" href="/patients/patient/appointment/<%=currentUserID%>/past"">Past Appointment</a>
+                <a style="margin-bottom: 5px;" class="nav-link btn btn-info" href="/patients/patient/appointment/<%=currentUserID%>/next">Next Appointment</a>
             </nav>
         </div>
-        <div class="col-6">
-            <form action="/patients/patient/appointment/<%=patient%>/new" method="POST">
-                <label for="cl">Choose a Clinic:</label>
-                <select name="clinic" id="cl">
+        <div class="col-7">
+            <form action="/patients/patient/appointment/<%=currentUserID%>/new" method="POST">
+                <div class="form-inline">
+                <label for="cl">Choose a Clinic: </label>
+                <select name="clinic" id="cl" style="margin: 0 auto;">
                     <option> </option>
                     <%clinics.forEach(function(clinic){%>
                     <option value="<%=clinic.id%>"><%=clinic.name%></option>
                     <%})%>
                 </select>
-                </select>
-                <label for="spec">Choose a specializations:</label>
-                <select name="specialization" id="spec" disabled>
+                </div>
+                <div class="form-inline">
+                <label for="spec">Choose a specializations: </label>
+                <select name="specialization" id="spec" disabled style="margin: 5px; margin-left: 50px;">
                     <option> </option>
                     <%specializations.forEach(function(specialization){%>
                     <option value="<%=specialization.id%>"><%=specialization.specialization%></option>
                     <%})%>
                 </select>
-                <label for="doc">Choose a doctor:</label>
-                <select name="doctor" id="doc" disabled>
+                </div>
+                <div class="form-inline">
+                <label for="doc">Choose a doctor: </label>
+                <select name="doctor" id="doc" disabled style="margin: 0 auto;">
                     <option> </option>
                 </select>
-                <div id='calendar'></div>
+            </div>
+                <div id="booldate" class="form-inline" style="margin-top: 5px">
+                    <label for="date">Chosen Date:</label>
+                    <input type="date" id="date" name="date" readonly value="">
+                    <label for="time">Chosen Hour:</label>
+                    <input class="inline" type="time" id="time" name="time" readonly value=""> -
+                    <input class="inline" type="time" id="time1" name="time1" readonly value="">
+                </div>
+           
+                <div id='calendar' style="margin: 10px auto;"></div>
                 <input class="inline" type="datetime" id="start" name="start" hidden value="">
                 <input class="inline" type="datetime" id="end" name="end" hidden value="">
                 <button class="btn btn-primary" id="addnew">Add new appointment</button>
             </form>
-            <div id="booldate">
-                <label for="date">Chosen Date:</label>
-                <input type="date" id="date" name="date" readonly value="">
-                <label for="time">Chosen Hour:</label>
-                <input class="inline" type="time" id="time" name="time" readonly value="">
-                <input class="inline" type="time" id="time1" name="time1" readonly value="">
-            </div>
+            
         </div>
     </div>
 </div>
@@ -118,6 +126,7 @@
                 initialView: 'timeGridWeek',
                 slotDuration: "00:20:00",
                 slotLabelInterval: "00:20:00",
+                allDaySlot: false,
                 slotMinTime: open,
                 slotMaxTime: end,
                 weekends: false,
@@ -125,6 +134,7 @@
                 defaultTimedEventDuration: "00:20:00",
                 eventColor: '#85D2d9',
                 events: events1,
+                height: 280,
                 select: function (info, jsEvent, view) {
                     var date = info.startStr.split("T");
                     time = date[1].split("-");

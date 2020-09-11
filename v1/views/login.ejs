@@ -1,4 +1,8 @@
 <%- include("./partials/header")%>
+
+<h2 style="margin: 10px;">Log In</h2>
+<div class="shortline" style="margin-bottom: 10px;"></div>
+
 <div class="login">
     <form action="/login" method="post">
     	<input type="text" name="email" placeholder="Email" required="required" />
@@ -8,7 +12,7 @@
         <input id="clinic" type="radio" name="user" value="clinic"/><label for="clinic"> Clinic</label>
         <button type="submit" class="btn btn-primary btn-large">Let me in.</button>
     </form>
-    <a href="/forgot" class="btn btn-warning">Forget password?</a>
+    <a href="/forgot" class="btn btn-warning" style="margin-top: 5px;">Forget password?</a>
     <a href="signup" class="btn btn-warning">Create new account</a>
 </div
 <%- include("./partials/footer")%>
