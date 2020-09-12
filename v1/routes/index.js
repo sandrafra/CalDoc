@@ -299,4 +299,12 @@ router.post("/:idC/doctors", function (req, res) {
         } 
     });
 });
+
+router.get("/download/:filename", function(req,res){
+
+    const file = `./files/` + req.params.filename;
+    console.log(file);
+    res.download(file); // Set disposition and send it.
+
+});
 module.exports = router;

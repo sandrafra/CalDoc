@@ -82,11 +82,11 @@
                 var start = JSON.stringify(calEvent.event._instance.range.start)
                 if(today > JSON.parse(start)){
                 var title = calEvent.event._def.title.split(" ");
-                $("#info").html("<div class='thumbnail'><p> <strong>Clinic:</strong> "+ title[0] + " "+ title[1] + " "+ title[2] + "  <button class='btn btn-sm btn-primary'>See more about the clinic</button>" +"</p>"+ "<p> <strong>Patient:</strong> "+ title[4] + " " + title[5] + "<p> <strong>Date:</strong> " + calEvent.event._instance.range.start +"</p> <a class='btn btn-sm btn-primary' href='/doctors/doctor/appointment/edit/"+ calEvent.event._def.publicId + "'>See visit</a></div>")
+                $("#info").html("<div class='thumbnail'><p> <strong>Clinic:</strong> "+ title[0] + " "+ title[1] + " "+ title[2] + "  <button class='btn btn-sm btn-primary'>See more about the clinic</button>" +"</p>"+ "<p> <strong>Patient:</strong> "+ title[4] + " " + title[5] + "<p> <strong>Date:</strong> " + calEvent.event._instance.range.start +"</p> <a class='btn btn-sm btn-primary' href='/doctors/doctor/" + <%-JSON.stringify(currentUserID) %>+ "/appointment/edit/"+ calEvent.event._def.publicId + "'>See visit</a></div>")
                 } else {
                 var title = calEvent.event._def.title.split(" ");
                 console.log(calEvent.event._def.publicId)
-                $("#info").html("<div class='thumbnail'><p> <strong>Clinic:</strong> "+ title[0]+ "  <button class='btn btn-sm btn-primary'>See more about the clinic</button>" +"</p>"+ "<p> <strong>Patient:</strong> "+ title[2] + " " + title[3] + "<p> <strong>Date:</strong> " + calEvent.event._instance.range.start +"</p><a class='btn btn-sm btn-primary' href='/doctors/doctor/appointment/new/" + calEvent.event._def.publicId + "'>Add to visit</a></div>")
+                $("#info").html("<div class='thumbnail'><p> <strong>Clinic:</strong> "+ title[0]+ "  <button class='btn btn-sm btn-primary'>See more about the clinic</button>" +"</p>"+ "<p> <strong>Patient:</strong> "+ title[2] + " " + title[3] + "<p> <strong>Date:</strong> " + calEvent.event._instance.range.start +"</p><a class='btn btn-sm btn-primary' href='/doctors/doctor/" + <%-JSON.stringify(currentUserID) %>+ "/appointment/new/" + calEvent.event._def.publicId + "'>Add to visit</a></div>")
                 }
             },
         });

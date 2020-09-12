@@ -71,10 +71,10 @@
             class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link hvr-grow" href="/patient/medications">Medications <span class="sr-only">(current)</span></a>
+        <a class="nav-link hvr-grow" href="/patients/patient/<%=currentUserID%>/medicaments">Medicaments <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link hvr-grow" href="/patient/fidnings">Findings <span class="sr-only">(current)</span></a>
+        <a class="nav-link hvr-grow" href="/patients/patient/<%=currentUserID%>/findings">Findings <span class="sr-only">(current)</span></a>
       </li>
       <% } else if(type === "clinic"){%>
       <li class="nav-item">

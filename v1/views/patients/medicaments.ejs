@@ -1,0 +1,28 @@
+<%-include("../partials/header")%>
+<div class="container">
+    <h1> Medicaments</h1>
+    <div class="lineshadow" style="margin-bottom: 30px;"></div>
+    <%if(medicaments.length>0){%>
+        <%medicaments.forEach(function(med){%>
+    <div class="thumbnail" style="padding: 5px; width: 700px; margin: 0 auto;">
+        <h5>Appoinetment at <strong><%= med.clinic%></strong></h5>
+        <div class="shortline" style="margin-bottom: 30px;"></div>
+        <div class="row justify-content-center">
+            <div class="col-2" style="text-align: left;">
+                <h5>Date: </h5>
+                <h5>Doctor: </h5>
+                <h5>Medications: </h5>
+            </div>
+            <div class="col-10">
+                <h5><%= med.startslot%></h5>
+                <h5><%= med.name%>  <%= med.surname%></h5>
+                <table style="border: 1px solid black; margin: 0 auto;">
+                    <tr > <td>Name</td> <td>Package</td> <td>Dosage</td> </tr>
+                    <tr> <td><%= med.med%></td> <td><%= med.package%></td> <td><%= med.dosage%></td></tr> 
+                </table>
+            </div>
+        </div>
+            
+        <%})}%>
+    </div>
+</div>

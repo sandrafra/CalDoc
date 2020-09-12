@@ -2,51 +2,61 @@
 <div class="container">
     <h1> Appointment</h1>
     <h3>Patient - <%=appointment[0].name%> <%-appointment[0].surname%></h3>
-    
         <form action="/doctors/doctor/appointment/new/<%=appointment[0].idE%>" method="POST">
-            <div class="row">
-            <div class="col-6">
-                <div class="thumbnail">
-                <select name="medicaments" id="med">
-                    <%medicaments.forEach(function(med){%>
-                    <option value="<%=med.id%>,<%=med.name%>" selected><%=med.name%></option>
-                    <%})%>
-                </select>
-                <input type="text" id="ean" value="" readonly>
-                <input type="text" id="package" value="" readonly>
-                <label  class="inline">Dosage: </label>
-                <input type="text" id="dosage" name="dosage" value="">
-                <div type="button" id="addmed" class="btn btn-primary btn-large">Add medicament </div>
-                <ul name='medlist' id="medlist"></ul>
-            </div>
-            </div>
-            <div class="col-6">
-                <div class="thumbnail">
-                <select name="examinations" id="exam">
-                    <%examinations.forEach(function(exam){%>
-                    <option value="<%=exam.id%>,<%=exam.name%>" selected><%=exam.name%></option>
-                    <%})%>
-                </select>
+            <div class="row justify-content-center">
+                <div class="col-5">
+                    
+                    <div class="thumbnail">
+                        <h4>Medicaments </h4>
+                        <select name="medicaments" id="med" style="margin-bottom: 5px;">
+                            <%medicaments.forEach(function(med){%>
+                            <option value="<%=med.id%>,<%=med.name%>" selected><%=med.name%></option>
+                            <%})%>
+                        </select>
+                        <label class='ean'>EAN: </label>
+                        <input type="text" class="ean" value="" readonly>
+                        <label class='package inline'>Package: </label>
+                        <input type="text" class="package" value="" readonly>
+                        <label> Dosage:</label>
+                        <input type="text" id="dosage" name="dosage" value="">
+                        <div type="button" id="addmed" class="btn btn-primary btn-large">Add medicament </div>
+                        <ul name='medlist' id="medlist"></ul>
+                    </div>
+                </div>
+            
+                <div class="col-5">
+                    <div class="thumbnail">
+                        <h4>Examinations </h4>
+                        <select name="examinations" id="exam">
+                            <%examinations.forEach(function(exam){%>
+                            <option value="<%=exam.id%>,<%=exam.name%>" selected><%=exam.name%></option>
+                            <%})%>
+                        </select>
                 
-                <label id="examinfo">Addicional examination information: </label>
-                <input type="text" id="examinfo">
-                <div type="button" id="addexam" class="btn btn-primary btn-large">Add medical examinations </div>
-                <ul name="examlist" id="examlist"></ul>
+                        <label>Addicional examination information: </label>
+                        <input type="text" id="examinfo" name="examinfo" value="">
+                        <div type="button" id="addexam" class="btn btn-primary btn-large">Add medical examinations </div>
+                        <ul name="examlist" id="examlist"></ul>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="col-12 align-center">
-            <label name="diagnose">Diagnose: </label>
-            <textarea type="text" name="diagnose" id="diagnose"></textarea>
-        </div>
-        </div>
-        <button class="btn btn-primary">Submit</button>
+            <h2>Diagnosis </h2>
+            <div class="lineshadow" style="margin-bottom: 30px;"></div>
+            <div class="row">
+                <div class="col-12 align-center">
+                        <label name="diagnose">Diagnose: </label>
+                        <textarea type="text" name="diagnose" id="diagnose" style="height: 200px; width: 700px;"></textarea>
+                </div>
+            </div>
+            <button class="btn btn-primary">Submit</button>
         </form>
+    </div>
     
 
     <script>
         $(document).ready(function () {
-            $("#ean").hide();
-            $("#package").hide();
+            $(".ean").hide();
+            $(".package").hide();
         });
 
         $("#med").change(function () {
@@ -57,10 +67,10 @@
             console.log(namemed)
             "<%medicaments.forEach(function(med){%>"
             if (idmed == <%-med.id%>) {
-                $("#ean").show();
-                $("#package").show();
-                $("#ean").val(<%-med.EAN%>);
-                $("#package").val("<%-med.package%>")
+                $(".ean").show();
+                $(".package").show();
+                $(".ean").val(<%-med.EAN%>);
+                $(".package").val("<%-med.package%>")
             }
             "<%})%>"
         });
@@ -68,14 +78,16 @@
             var medvalue = $("#med").val();
             var idmed = medvalue.split(",")[0];
             var namemed = medvalue.split(",")[1];
-            $('#medlist').append('<li>' + namemed + " " + $("#ean").val() + " " + $("#package").val() + " " + $("#dosage").val() + '<input type="hidden" name="medlist[]" value="' + idmed + "," + $("#dosage").val()+ '"></li>')
+            $('#medlist').append('<li> <strong>Name:</strong> ' + namemed + "<br> <strong>EAN:</strong> " + $(".ean").val() + "<br> <strong>Package:</strong> " + $(".package").val() + "<br> <strong>Dosage</strong> " + $("#dosage").val() + '<input type="hidden" name="medlist[]" value="' + idmed + "," + $("#dosage").val()+ '"></li>')
             $("#dosage").val("")
         })
         $("#addexam").click(function () {
+            var examinfo = $("#examinfo").val();
+            console.log(examinfo)
             var examvalue = $("#exam").val();
             var idexam = examvalue.split(",")[0];
             var nameexam = examvalue.split(",")[1];
-            $('#examlist').append('<li>' + nameexam +"<br> Addicional information: " + $("#examinfo").val() + '<input type="hidden" name="examlist[]" value="' + idexam +","+ $("#examinfo").val() + '"></li>')
+            $('#examlist').append('<li><strong>Name:</strong> ' + nameexam +"<br><strong> Addicional information: </strong>" + $("#examinfo").val() + '<input type="hidden" name="examlist[]" value="' + idexam +","+ $("#examinfo").val() + '"></li>');
             $('#examinfo').val("");
         })
 

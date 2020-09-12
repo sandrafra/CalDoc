@@ -226,6 +226,26 @@ router.get("/event",  middleware.isPatient, middleware.isLoggedin, middleware.ch
                 res.send(results);
             });
         });   
-})
+});
+
+router.get("/:id/medicaments", middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
+    con.query("select medicamentsapp.IdM, medicamentsapp.`IdE`, medicamentsapp.dosage, medicaments.`name` as med, medicaments.`package`, event.IdDC, event.`startslot`, event.`endslot`, doctors.name, doctors.surname, clinics.name as clinic from (((((medicamentsapp inner join medicaments on medicamentsapp.IdM = medicaments.id) inner join event on medicamentsapp.IdE = event.id and event.idP = ?) Inner Join docclin on docclin.id = event.IdDC) Inner Join doctors on doctors.id = docclin.IdD) Inner Join clinics ON clinics.id = docclin.IdC)", req.params.id, function(err, medicaments){
+        if(err) throw err;
+        else{
+            console.log(medicaments);
+            res.render("patients/medicaments", {medicaments: medicaments});
+        }
+    });
+});
+
+router.get("/:id/findings", middleware.isPatient, middleware.isLoggedin, middleware.checkAuth, function(req,res){
+    con.query("select file.name as file, file.`idE`, event.IdDC, event.`startslot`, event.`endslot`, doctors.name, doctors.surname, clinics.name as clinic from ((((file inner join event on file.idE = event.id and event.idP = ?) Inner Join docclin on docclin.id = event.IdDC) Inner Join doctors on doctors.id = docclin.IdD) Inner Join clinics ON clinics.id = docclin.IdC)", req.params.id, function(err, findings){
+        if(err) throw err;
+        else{
+            console.log(findings);
+            res.render("patients/findings", {findings: findings});
+        }
+    });
+});
 
 module.exports = router;

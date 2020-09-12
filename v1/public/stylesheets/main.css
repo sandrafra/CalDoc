@@ -319,3 +319,11 @@ a:hover {
 	margin: 5px;
 }
 
+.med  input{
+	width: 300px;
+}
+td{
+	border: 1px solid black;
+	padding: 5px;
+}
+

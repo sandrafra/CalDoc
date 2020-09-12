@@ -5,6 +5,39 @@ var middleware = require("../middleware");
 var con = require("../db");
 var bcrypt = require("bcrypt");
 var crypto = require("crypto");
+var multer = require("multer");
+var path = require("path");
+
+const DIR = '/v1/files';
+
+let storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+      callback(null, DIR);
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+ 
+let upload = multer({storage: storage});
+
+router.post('/upload/:idE', upload.single('exam'), function (req, res) {
+    if (!req.file) {
+        console.log("No file received");
+        res.redirect('back');
+    
+      } else {
+        console.log('file received');
+        console.log(req);
+        con.query("INSERT INTO `file`('idE',`name`, `type`, `size`) VALUES (?,?,?,?)", [req.params.idE,req.file.filename, req.file.mimetype, req.file.size], function(err){
+            if(err) throw err;
+            else{            
+                res.redirect('back');
+                req.flash("success", "file added");
+            }
+        });
+      }
+});
 
 router.get("/register", function (req, res) {
     con.query("SELECT * FROM specialization", function (err, result) {
@@ -67,8 +100,8 @@ router.get('/:id/calendar',function (req, res) {
     })
 });
 
-router.get('/appointment/new/:id', function (req, res) {
-    con.query("SELECT event.id as idE,event.idP, event.startslot, event.endslot, patients.name, patients.surname, patients.email, patients.id FROM event INNER JOIN patients ON event.idP = patients.id and event.id =?", req.params.id, function (err, results) {
+router.get('/:is/appointment/new/:idE', function (req, res) {
+    con.query("SELECT event.id as idE,event.idP, event.startslot, event.endslot, patients.name, patients.surname, patients.email, patients.id FROM event INNER JOIN patients ON event.idP = patients.id and event.id =?", req.params.idE, function (err, results) {
         if (err) throw err
         else {
             con.query("SELECT * FROM medicaments", function (err, medicaments) {
@@ -87,22 +120,28 @@ router.get('/appointment/new/:id', function (req, res) {
     })
 });
 
-router.get('/appointment/edit/:id', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
-    con.query("SELECT event.id as idE,event.idP, event.startslot, event.endslot, patients.name, patients.surname, patients.email, patients.id FROM event INNER JOIN patients ON event.idP = patients.id and event.id =?", req.params.id, function (err, results) {
+router.get('/:id/appointment/edit/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
+    con.query("SELECT event.id as idE,event.idP, event.startslot, event.endslot, patients.name, patients.surname, patients.email, patients.id FROM event INNER JOIN patients ON event.idP = patients.id and event.id =?", req.params.idE, function (err, results) {
         if (err) throw err
         else {
-            con.query("SELECT medicaments.name, medicaments.EAN, medicaments.package, medicamentsapp.dosage FROM medicaments INNER JOIN medicamentsapp ON medicamentsapp.IdM = medicaments.id and medicamentsapp.IdE = ?", req.params.id, function (err, medicaments) {
+            con.query("SELECT medicaments.name, medicaments.EAN, medicaments.package, medicamentsapp.dosage FROM medicaments INNER JOIN medicamentsapp ON medicamentsapp.IdM = medicaments.id and medicamentsapp.IdE = ?", req.params.idE, function (err, medicaments) {
                 if (err) throw err
                 else {
-                    con.query("SELECT examinations.name, examinationsapp.info FROM examinations INNER JOIN examinationsapp ON examinationsapp.idEx = examinations.id and examinationsapp.idE = ?", req.params.id, function (err, examinations) {
+                    con.query("SELECT examinations.name, examinationsapp.info FROM examinations INNER JOIN examinationsapp ON examinationsapp.idEx = examinations.id and examinationsapp.idE = ?", req.params.idE, function (err, examinations) {
                         if (err) throw err
                         else {
-                            con.query("SELECT diagnose FROM diagnoses WHERE idE =?", req.params.id, function (err, diagnose) {
+                            con.query("SELECT diagnose FROM diagnoses WHERE idE =?", req.params.idE, function (err, diagnose) {
                                 if (err) throw err
                                 else{
-                                    console.log(diagnose)
-                                    res.render("doctors/pastappointment", { appointment: results, medicaments: medicaments, examinations: examinations, diagnose: diagnose})
+                                    con.query("SELECT * FROM file WHERE idE= ?", req.params.idE, function(err, files){
+                                        if(err) throw err;
+                                        else{
+                                            console.log(files)
+                                    res.render("doctors/pastappointment", { appointment: results, medicaments: medicaments, examinations: examinations, diagnose: diagnose, files: files})
                         
+                                        }
+                                    })
+                                   
                                 }
                             });
                         }
@@ -114,7 +153,7 @@ router.get('/appointment/edit/:id', middleware.isDoctor, middleware.isLoggedin, 
 
 });
 
-router.post('/appointment/new/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
+router.post('/:id/appointment/new/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     var medlist = req.body.medlist
     console.log(typeof (medlist))
     if (medlist) {
@@ -145,7 +184,7 @@ router.post('/appointment/new/:idE', middleware.isDoctor, middleware.isLoggedin,
 
     res.redirect("back");
 });
-router.post('/appointment/edit/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
+router.post('/:id/appointment/edit/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     var diagnose = req.body.diagnose
     if (diagnose) {
         con.query("SELECT * FROM diagnoses WHERE idE = ?", req.params.idE, function(err, result){
