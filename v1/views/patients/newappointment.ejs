@@ -123,18 +123,18 @@
             });
             var i = 0;
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
-                slotDuration: "00:20:00",
-                slotLabelInterval: "00:20:00",
-                allDaySlot: false,
-                slotMinTime: open,
-                slotMaxTime: end,
-                weekends: false,
-                selectable: true,
-                defaultTimedEventDuration: "00:20:00",
-                eventColor: '#85D2d9',
-                events: events1,
-                height: 280,
+                height: 500,
+            initialView: 'timeGridWeek',
+            slotDuration: "00:20:00",
+            slotLabelInterval: "00:20:00",
+            slotMinTime: "6:00:00",
+            slotMaxTime: "21:00:00",
+            weekends: false,
+            allDaySlot: false,
+            selectable: true,
+            defaultTimedEventDuration: "00:20:00",
+            eventColor: '#85D2d9',
+            selectOverlap: false,
                 select: function (info, jsEvent, view) {
                     var date = info.startStr.split("T");
                     time = date[1].split("-");
