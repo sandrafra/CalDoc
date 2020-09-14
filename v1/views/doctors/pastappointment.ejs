@@ -11,7 +11,7 @@
         <button class="btn btn-primary">Add file</button>
     </form>
     
-    <div class="thumbnail" style="width: 750px; height: 200px; padding: 10px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px;">
+    <div class="thumbnail" style="width: 750px; height: 150px; padding: 10px; margin: 0 auto; margin-top: 10px; margin-bottom: 10px;">
         <h2>Added findings: </h2>
         <ul>
     <%if(files.length>0){%>
@@ -20,7 +20,7 @@
     <%})}%>
 </ul>
 </div>
-    <form action="/doctors/doctor/appointment/edit/<%=appointment[0].idE%>" method="POST">
+    <form action="/doctors/doctor/<%=currentUserID%>/appointment/edit/<%=appointment[0].idE%>" method="POST">
         <div class="row justify-content-center">
             <div class="col-5">
                 <div class="thumbnail med" >

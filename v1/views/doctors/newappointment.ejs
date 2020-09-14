@@ -2,7 +2,7 @@
 <div class="container">
     <h1> Appointment</h1>
     <h3>Patient - <%=appointment[0].name%> <%-appointment[0].surname%></h3>
-        <form action="/doctors/doctor/appointment/new/<%=appointment[0].idE%>" method="POST">
+        <form action="/doctors/doctor/<%=currentUserID%>/appointment/new/<%=appointment[0].idE%>" method="POST">
             <div class="row justify-content-center">
                 <div class="col-5">
                     

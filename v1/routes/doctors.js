@@ -58,9 +58,12 @@ router.post("/register", function (req, res) {
                 req.flash("error", "Passwords do not match");
                 res.redirect("back");
             } else {
+                saltround = 8;
+                bcrypt.hash(req.body.password, saltround, function (err, hash) {
 
-                bcrypt.hash(req.body.password, 8, function (err, hash) {
+                    
                     var token = crypto.randomBytes(64).toString('hex');
+
                     var doctor = [req.body.specialization, req.body.name, req.body.surname, req.body.email, hash, token];
                     con.query('INSERT INTO doctors (specialization, name, surname, email, password, token) VALUES (?, ?, ?, ?, ?, ?)', doctor, function (err) {
                         if (err) {
