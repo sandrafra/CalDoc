@@ -8,7 +8,7 @@ var con = require("../db");
 var nodemailer = require('nodemailer');
 var bcrypt = require('bcrypt');
 
-var transporter = nodemailer.createTransport({
+var transporterr = nodemailer.createTransport({
     service: process.env.MAIL_SERVICE,
     auth: {
         user: process.env.MAIL_USER,
@@ -104,7 +104,7 @@ router.post('/forgot', function (req, res, next) {
                     'https://doccal.herokuapp.com/reset/' + token + '\n\n' +
                     'If you did not request this, please ignore this email and your password will remain unchanged.\n'
             };
-            transporter.sendMail(mailOptions, function (err) {
+            transporterr.sendMail(mailOptions, function (err) {
                 if (err) {
                     throw err;
                 } else {
