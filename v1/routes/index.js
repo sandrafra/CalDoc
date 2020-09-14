@@ -8,9 +8,13 @@ var con = require("../db");
 var nodemailer = require('nodemailer');
 var bcrypt = require('bcrypt');
 
-
-
-
+var transporter = nodemailer.createTransport({
+    service: process.env.MAIL_SERVICE,
+    auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+    },
+});
 
 router.get("/", function (req, res) {
     res.render("landing");

@@ -30,7 +30,7 @@ router.post("/register", function (req, res) {
                             console.log(err);
                         } else {
                             middleware.verificationEmail(req.body.email, token);
-                            req.flash("success", "New  doctor account created. To confirm account please click link which was send to your e-mail");
+                            req.flash("success", "New  patient account created. To confirm account please click link which was send to your e-mail");
                             res.redirect("/home");
                         }
                     });

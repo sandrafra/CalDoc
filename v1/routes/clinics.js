@@ -38,7 +38,7 @@ router.post("/register", function (req, res) {
                             console.log(err);
                         } else {
                             middleware.verificationEmail(req.body.email, token);
-                            req.flash("success", "New aclincccount created. To confirm account please click link which was send to your e-mail");
+                            req.flash("success", "New clinic account created. To confirm account please click link which was send to your e-mail");
                             res.redirect("/home");
                         }
                     });

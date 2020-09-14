@@ -13,8 +13,8 @@ var transporter = nodemailer.createTransport({
 });
 
  
-middlewareObj.profileLogin =  function(req ,type, requestBody, done) {
-    var answer = 'SELECT * FROM ' + type + 's WHERE email = ?';
+middlewareObj.profileLogin =  function(req ,profileType, requestBody, done) {
+    var answer = 'SELECT * FROM ' + profileType + 's WHERE email = ?';
     con.query(answer, requestBody.email, function (err, result, fields) {
         if (err) {
             throw err;
@@ -24,9 +24,9 @@ middlewareObj.profileLogin =  function(req ,type, requestBody, done) {
                 bcrypt.compare(requestBody.password, result[0].password, function (err, compare) {
                     if (compare === true) {
                         var answer2 = 'SELECT confirmed FROM ' + type + 's WHERE email = ?';
-                        con.query(answer2, requestBody.email, function (err, confirmed) {
-                            if (confirmed[0].confirmed === 1) {
-                                req.app.locals.user = type;
+                        con.query(answer2, requestBody.email, function (err, resultConfirmed) {
+                            if (resultConfirmed[0].confirmed === 1) {
+                                req.app.locals.user = profileType;
                                 return done(null, result[0].id);
 
                             }
@@ -99,7 +99,7 @@ middlewareObj.checkAuth = function(req,res, next){
             return next();
         }
     }
-    req.flash("error", "not auth");
+    req.flash("error", "Not authenticated");
     res.redirect("back");
 }
 module.exports = middlewareObj;
