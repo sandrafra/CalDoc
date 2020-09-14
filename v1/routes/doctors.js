@@ -184,8 +184,8 @@ router.post('/:id/appointment/new/:idE', middleware.isDoctor, middleware.isLogge
         con.query("INSERT INTO diagnoses (idE, diagnose) VALUES (?,?)", [req.params.idE, diagnose], function (err) {
             if (err) throw err;
         })
-    req.flash("success", "Diagnose added successfully")
-    res.render("calendar");
+    req.flash("success", "Diagnose added successfully");
+    res.render("doctors/calendar");
 });
 router.post('/:id/appointment/edit/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     var diagnose = req.body.diagnose
@@ -208,7 +208,7 @@ router.post('/:id/appointment/edit/:idE', middleware.isDoctor, middleware.isLogg
             if (err) throw err;
         });
     }
-    res.render("calendar")
+    res.render("doctors/calendar")
 });
 
 router.post('/:id', middleware.isLoggedin, middleware.isDoctor, middleware.checkAuth, function (req, res) {
