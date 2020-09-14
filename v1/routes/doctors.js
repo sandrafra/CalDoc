@@ -8,7 +8,9 @@ var crypto = require("crypto");
 var multer = require("multer");
 var path = require("path");
 
-const DIR = '/v1/files';
+Dir.mkdir(File.join(Rails.root, 'files'))
+const DIR = 'v1/files';
+
 
 let storage = multer.diskStorage({
     destination: function (req, file, callback) {
