@@ -61,7 +61,7 @@ router.post("/register", function (req, res) {
                 saltround = 8;
                 bcrypt.hash(req.body.password, saltround, function (err, hash) {
 
-                    
+
                     var token = crypto.randomBytes(64).toString('hex');
 
                     var doctor = [req.body.specialization, req.body.name, req.body.surname, req.body.email, hash, token];
@@ -184,7 +184,7 @@ router.post('/:id/appointment/new/:idE', middleware.isDoctor, middleware.isLogge
         con.query("INSERT INTO diagnoses (idE, diagnose) VALUES (?,?)", [req.params.idE, diagnose], function (err) {
             if (err) throw err;
         })
-
+    req.flash("success", "Diagnose added successfully")
     res.redirect("back");
 });
 router.post('/:id/appointment/edit/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
