@@ -96,6 +96,7 @@ router.post('/forgot', function (req, res, next) {
         },
         function (token, email, done) {
             middleware.sendForgot(email, token);
+        }
     ], function (err) {
         if (err) return next(err);
         res.redirect('/forgot');
