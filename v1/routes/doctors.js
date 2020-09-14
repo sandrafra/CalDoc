@@ -185,7 +185,7 @@ router.post('/:id/appointment/new/:idE', middleware.isDoctor, middleware.isLogge
             if (err) throw err;
         })
     req.flash("success", "Diagnose added successfully")
-    res.redirect("back");
+    res.render("calendar");
 });
 router.post('/:id/appointment/edit/:idE', middleware.isDoctor, middleware.isLoggedin, middleware.checkAuth, function (req, res) {
     var diagnose = req.body.diagnose
@@ -208,7 +208,7 @@ router.post('/:id/appointment/edit/:idE', middleware.isDoctor, middleware.isLogg
             if (err) throw err;
         });
     }
-    res.redirect("back")
+    res.render("calendar")
 });
 
 router.post('/:id', middleware.isLoggedin, middleware.isDoctor, middleware.checkAuth, function (req, res) {
