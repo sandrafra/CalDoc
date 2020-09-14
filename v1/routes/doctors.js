@@ -8,7 +8,7 @@ var crypto = require("crypto");
 var multer = require("multer");
 var path = require("path");
 
-Dir.mkdir(File.join(Rails.root, 'files'))
+
 const DIR = 'v1/files';
 
 
