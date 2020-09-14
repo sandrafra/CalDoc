@@ -95,25 +95,7 @@ router.post('/forgot', function (req, res, next) {
             })
         },
         function (token, email, done) {
-            var mailOptions = {
-                to: email,
-                from: 'DocCal',
-                subject: 'Node.js Password Reset',
-                text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
-                    'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-                    'https://doccal.herokuapp.com/reset/' + token + '\n\n' +
-                    'If you did not request this, please ignore this email and your password will remain unchanged.\n'
-            };
-            transporterr.sendMail(mailOptions, function (err) {
-                if (err) {
-                    throw err;
-                } else {
-                    console.log('mail sent');
-                    req.flash('success', 'An e-mail has been sent to ' + email + ' with further instructions.');
-                    done(err, 'done');
-                }
-            });
-        }
+            middleware.sendForgot(email, token);
     ], function (err) {
         if (err) return next(err);
         res.redirect('/forgot');
